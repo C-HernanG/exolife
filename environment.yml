@@ -1,0 +1,26 @@
+name: exolife
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - numpy
+  - pandas
+  - polars
+  - scikit-learn
+  - matplotlib
+  - seaborn
+  - jupyterlab
+  - ipykernel
+  - xgboost
+  - lightgbm
+  - pip
+  - pip:
+      - astropy
+      - astroquery
+      - shap
+      - tqdm
+      - pre-commit
+      - joblib
+      - requests
+      - pyyaml

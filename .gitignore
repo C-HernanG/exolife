@@ -81,17 +81,7 @@ tests/__pycache__/
 # PyCharm
 .idea/
 
-# Models and results
-models/
-results/
-*.pkl
-*.joblib
-*.h5
-
 # Configs and secrets
-*.yaml
-*.yml
-!configs/
 secrets.*
 credentials.*
 
@@ -105,10 +95,6 @@ Icon?
 .pre-commit-config.yaml
 .pre-commit-hooks.yaml
 .pre-commit/
-
-# Ignore data (but allow versioned config)
-data/
-!data/.gitkeep
 
 # Ignore the LICENSE/README in build but keep in root
 *.md~
