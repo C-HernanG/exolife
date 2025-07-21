@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "exolife"
+version = "0.1.0"
+description = "Predicting Exoplanet Habitability to Support Astrobiological Discovery"
+authors = [
+    { name="Carlos Hernán Guirao", email="carlos.hernangui@gmail.com" },
+]
+keywords = ["astronomy", "exoplanet", "machine-learning", "habitability"]
+readme = "README.md"
+license = { text = "MIT" }
+packages = [{include = "exolife", from = "src"}]
+requires-python = ">=3.11"
+
+dependencies = [
+    "numpy",
+    "pandas",
+    "polars",
+    "scikit-learn",
+    "matplotlib",
+    "seaborn",
+    "jupyterlab",
+    "ipykernel",
+    "xgboost",
+    "lightgbm",
+    "astropy",
+    "astroquery",
+    "shap",
+    "tqdm",
+    "pre-commit",
+    "joblib",
+    "requests",
+    "pyyaml",
+]
+
+[tool.poetry.scripts]
+exolife = "exolife.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

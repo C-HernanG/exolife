@@ -1,0 +1,115 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+pip-wheel-metadata/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+.env/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Pytest cache
+.cache/
+
+# Coverage reports
+.coverage
+coverage.xml
+htmlcov/
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre
+.pyre/
+
+# Pyright
+pyrightconfig.json
+
+# Pylint
+pylint-report.txt
+
+# Unit test / test output
+test-output/
+tests/__pycache__/
+
+# Logs and local data
+*.log
+*.tmp
+*.out
+*.DS_Store
+
+# VSCode
+.vscode/
+
+# PyCharm
+.idea/
+
+# Models and results
+models/
+results/
+*.pkl
+*.joblib
+*.h5
+
+# Configs and secrets
+*.yaml
+*.yml
+!configs/
+secrets.*
+credentials.*
+
+# System-specific
+Thumbs.db
+.DS_Store
+ehthumbs.db
+Icon?
+
+# Pre-commit logs
+.pre-commit-config.yaml
+.pre-commit-hooks.yaml
+.pre-commit/
+
+# Ignore data (but allow versioned config)
+data/
+!data/.gitkeep
+
+# Ignore the LICENSE/README in build but keep in root
+*.md~
+LICENSE~
