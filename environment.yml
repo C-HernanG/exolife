@@ -13,6 +13,11 @@ dependencies:
   - jupyterlab
   - ipykernel
   - nodejs
+  - black
+  - isort
+  - flake8
+  - pytest
+  - pre-commit
   - xgboost
   - lightgbm
   - pip
@@ -21,11 +26,6 @@ dependencies:
       - astroquery
       - shap
       - tqdm
-      - pre-commit
       - joblib
       - requests
       - pyyaml
-      - black
-      - isort
-      - flake8
-      - pytest
