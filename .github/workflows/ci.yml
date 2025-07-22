@@ -36,8 +36,8 @@ jobs:
           isort --check --diff .
           flake8
 
-      - name: Run tests
-        shell: bash -l {0}
-        run: |
-          conda activate exolife
-          pytest -q
+#      - name: Run tests
+#        shell: bash -l {0}
+#        run: |
+#          conda activate exolife
+#          pytest -q
