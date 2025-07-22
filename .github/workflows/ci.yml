@@ -29,10 +29,15 @@ jobs:
         run: conda info
 
       - name: Run linters
+        shell: bash -l {0}
         run: |
+          conda activate exolife
           black --check --diff .
           isort --check --diff .
           flake8
 
       - name: Run tests
-        run: pytest -q
+        shell: bash -l {0}
+        run: |
+          conda activate exolife
+          pytest -q

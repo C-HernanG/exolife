@@ -1,9 +1,12 @@
 name: exolife
 channels:
   - conda-forge
-  - defaults
 dependencies:
   - python=3.11
+  - black
+  - isort
+  - flake8
+  - pytest
   - numpy
   - pandas
   - polars
@@ -13,13 +16,9 @@ dependencies:
   - jupyterlab
   - ipykernel
   - nodejs
-  - black
-  - isort
-  - flake8
-  - pytest
-  - pre-commit
   - xgboost
   - lightgbm
+  - pre-commit
   - pip
   - pip:
       - astropy
