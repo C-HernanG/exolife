@@ -7,19 +7,32 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11"]
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
         with:
-          python-version: "3.11"
-# TODO:
-# - Add Conda environment setup
-# - Add pre-commit checks
-# - Add model validation/test step
-# - Optionally cache dependencies
+          python-version: ${{ matrix.python-version }}
+          activate-environment: exolife
+          environment-file: environment.yml
+          auto-activate-base: false
+
+      - name: Show conda info
+        run: conda info
+
+      - name: Run linters
+        run: |
+          black --check --diff .
+          isort --check --diff .
+          flake8
+
+      - name: Run tests
+        run: pytest -q

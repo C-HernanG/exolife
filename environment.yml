@@ -12,6 +12,7 @@ dependencies:
   - seaborn
   - jupyterlab
   - ipykernel
+  - nodejs
   - xgboost
   - lightgbm
   - pip
@@ -24,3 +25,7 @@ dependencies:
       - joblib
       - requests
       - pyyaml
+      - black
+      - isort
+      - flake8
+      - pytest

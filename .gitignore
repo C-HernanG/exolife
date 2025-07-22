@@ -91,11 +91,10 @@ Thumbs.db
 ehthumbs.db
 Icon?
 
-# Pre-commit logs
-.pre-commit-config.yaml
-.pre-commit-hooks.yaml
-.pre-commit/
-
 # Ignore the LICENSE/README in build but keep in root
 *.md~
 LICENSE~
+
+# Ignore all data but keep the folder (via .gitkeep)
+data/
+!data/.gitkeep

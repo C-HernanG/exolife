@@ -9,10 +9,78 @@ This project is oriented toward developing a machine learning model capable of e
 - Develop a generalizable model applicable to both cataloged and hypothetical planets.
 - Provide an open framework for reproducible experimentation and future integration.
 
+## Getting Started
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/C-HernanG/exolife.git
+cd exolife
+```
+
+### 2. Create the Conda Environment
+
+```bash
+conda env create -f environment.yml
+conda activate exolife
+```
+
+### 3. (Optional) Install Package in Development Mode
+
+To install the package in development mode:
+
+```bash
+pip install -e .
+```
+
+### 4. (Optional) Register Jupyter Kernel
+
+To use this environment inside Jupyter notebooks:
+
+```bash
+python -m ipykernel install --user --name=exolife --display-name "Python (Exolife)"
+```
+
+## Usage
+
+### Command Line Interface
+
+```bash
+# Train a model
+exolife train --config configs/baseline.yaml
+
+# Make predictions
+exolife predict --model models/best_model.pkl --data new_planets.csv
+
+# Evaluate model
+exolife evaluate --model models/best_model.pkl --test-data test_set.csv
+```
+
+## Development & Testing
+
+### Using Make Commands
+
+We provide a Makefile for common development tasks:
+
+```bash
+make install    # Create conda environment
+make test       # Run tests
+make lint       # Run code quality checks
+make format     # Format code with black and isort
+make clean      # Clean up cache files
+make help       # Show all available commands
+```
+
+### Launch Jupyter Lab
+
+```bash
+jupyter lab
+```
+
 ## Data Sources
 
-- [NASA Exoplanet Archive](https://exoplanetarchive.ipac.caltech.edu/)
-- [PHL Exoplanet Catalog](http://phl.upr.edu/projects/habitable-exoplanets-catalog)
+- [NASA Exoplanet Archive](https://exoplanetarchive.ipac.caltech.edu/) - Comprehensive database of confirmed exoplanets
+- [PHL Exoplanet Catalog](http://phl.upr.edu/projects/habitable-exoplanets-catalog) - Habitability-focused planetary database
 
 ## License
 
@@ -20,6 +88,8 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Acknowledgments
 
-- NASA Exoplanet Science Institute
-- Planetary Habitability Lab (UPR Arecibo)
-- Open-source contributors to SciPy, Scikit-learn, Pandas, and AstroPy
+- **NASA Exoplanet Archive** - For providing comprehensive exoplanet data
+- **PHL Planetary Habitability Catalog** - For habitability-focused datasets
+- **Astropy Community** - For astronomical computing tools
+- **Astroquery Team** - For astronomical data query capabilities
+- **Open Source Community** - For the amazing ML and data science tools
