@@ -1,0 +1,30 @@
+# Commit Message Format:
+# <type>(<scope>): <short summary>
+#
+# Types:
+#   data      - Add or update datasets
+#   notebook  - Add or modify Jupyter notebooks
+#   feat      - Introduce new functionality (e.g., model, metric)
+#   fix       - Fix bugs or incorrect logic
+#   refactor  - Code refactoring without behavior change
+#   docs      - Documentation updates (including markdown or cell comments)
+#   test      - Add or update tests or validation cells
+#   chore     - Routine tasks, cleanup, renaming
+#   infra     - Environment, configuration, dependency changes
+#
+# Scopes:
+#   ingestion, preprocessing, feature, exploration, modeling,
+#   evaluation, inference, utils, experiments, core
+#
+# Example:
+# feat(modeling): add ensemble voting model with calibrated outputs
+#
+# ---------------------------------------------------------------------
+# Short summary (max 72 characters)
+#
+# Longer description (optional):
+#
+# - What was changed and why
+# - Assumptions, dependencies, or limitations
+# - Follow-up actions or TODOs
+# ---------------------------------------------------------------------

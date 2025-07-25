@@ -41,20 +41,22 @@ To use this environment inside Jupyter notebooks:
 python -m ipykernel install --user --name=exolife --display-name "Python (Exolife)"
 ```
 
-## Usage
-
-### Command Line Interface
+# ExoLife CLI Commands
 
 ```bash
-# Train a model
-exolife train --config configs/baseline.yaml
+# Download and preprocess data for the specified data source
+exolife fetch <source>
 
-# Make predictions
-exolife predict --model models/best_model.pkl --data new_planets.csv
+# Download and preprocess data for all configured sources
+exolife fetch all
 
-# Evaluate model
-exolife evaluate --model models/best_model.pkl --test-data test_set.csv
+# Combine interim datasets into a final processed file using the given merge strategy
+exolife merge <method>
+
+# Display the ExoLife version, available data sources, and merge methods
+exolife info
 ```
+
 
 ## Development & Testing
 

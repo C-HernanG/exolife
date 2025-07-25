@@ -1,0 +1,295 @@
+{
+    "project": "Exoplanet Habitability Model",
+    "version": "1.1.1",
+    "last_updated": "2025-07-25",
+    "notes": "Optimized list of sources and columns needed to estimate exoplanet habitability. Added Gaia DR3 stellar parameters and SWEET‑Cat for homogeneous host‑star spectroscopy. Kopparapu HZ limits are now computed locally via hz_utils.py, so no separate coefficient file is required.",
+    "data_sources": [
+        {
+            "id": "nasa_exoplanet_archive_pscomppars",
+            "name": "NASA Exoplanet Archive – Composite Planet Parameters (pscomppars)",
+            "description": "Canonical, curated planet & host‑star parameters for confirmed exoplanets.",
+            "download_url": "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+*+from+pscomppars&format=csv",
+            "primary_keys": [
+                "pl_name"
+            ],
+            "join_keys": {
+                "phl_exoplanet_catalog": [
+                    "P_NAME"
+                ],
+                "gaia_dr3_hosts": [
+                    "gaia_id",
+                    "Gaia_DR3_source_ID"
+                ],
+                "gaia_dr3_astrophysical_parameters": [
+                    "gaia_id",
+                    "source_id"
+                ],
+                "sweet_cat": [
+                    "hostname",
+                    "Name"
+                ]
+            },
+            "columns_to_keep": [
+                "pl_name",
+                "pl_letter",
+                "hostname",
+                "gaia_id",
+                "sy_pnum",
+                "sy_snum",
+                "disc_year",
+                "disc_method",
+                "ra",
+                "dec",
+                "sy_dist",
+                "pl_orbper",
+                "pl_orbpererr1",
+                "pl_orbpererr2",
+                "pl_orbsmax",
+                "pl_orbsmaxerr1",
+                "pl_orbsmaxerr2",
+                "pl_orbeccen",
+                "pl_orbeccenerr1",
+                "pl_orbeccenerr2",
+                "pl_orbincl",
+                "pl_orbinclerr1",
+                "pl_orbinclerr2",
+                "pl_rade",
+                "pl_radeerr1",
+                "pl_radeerr2",
+                "pl_radj",
+                "pl_radjerr1",
+                "pl_radjerr2",
+                "pl_masse",
+                "pl_masseerr1",
+                "pl_masseerr2",
+                "pl_massj",
+                "pl_massjerr1",
+                "pl_massjerr2",
+                "pl_dens",
+                "pl_denserr1",
+                "pl_denserr2",
+                "pl_eqt",
+                "pl_eqterr1",
+                "pl_eqterr2",
+                "pl_insol",
+                "pl_insolerr1",
+                "pl_insolerr2",
+                "tran_flag",
+                "rv_flag",
+                "ttv_flag",
+                "ast_flag",
+                "ima_flag",
+                "st_teff",
+                "st_tefferr1",
+                "st_tefferr2",
+                "st_met",
+                "st_meterr1",
+                "st_meterr2",
+                "st_logg",
+                "st_loggerr1",
+                "st_loggerr2",
+                "st_lum",
+                "st_lumerr1",
+                "st_lumerr2",
+                "st_age",
+                "st_ageerr1",
+                "st_ageerr2",
+                "st_mass",
+                "st_masserr1",
+                "st_masserr2",
+                "st_rad",
+                "st_raderr1",
+                "st_raderr2",
+                "st_dens",
+                "st_denserr1",
+                "st_denserr2",
+                "sy_gmag",
+                "sy_kmag",
+                "sy_tmag",
+                "systemid",
+                "pl_pubdate"
+            ],
+            "refresh": "weekly"
+        },
+        {
+            "id": "phl_exoplanet_catalog",
+            "name": "PHL Exoplanet Catalog (HEC)",
+            "description": "Catalog with habitability‑oriented metrics (ESI, HZ flags, surface‑temperature estimates).",
+            "download_url": "https://www.hpcf.upr.edu/~abel/phl/hec2/database/phl_exoplanet_catalog.csv",
+            "primary_keys": [
+                "P_NAME"
+            ],
+            "join_keys": {
+                "nasa_exoplanet_archive_pscomppars": [
+                    "pl_name"
+                ],
+                "gaia_dr3_hosts": [
+                    "Gaia_confirmed_ID"
+                ]
+            },
+            "columns_to_keep": [
+                "P_NAME",
+                "P_YEAR",
+                "P_UPDATED",
+                "P_MASS",
+                "P_MASS_ERROR_MIN",
+                "P_MASS_ERROR_MAX",
+                "P_RADIUS",
+                "P_RADIUS_ERROR_MIN",
+                "P_RADIUS_ERROR_MAX",
+                "P_PERIOD",
+                "P_PERIOD_ERROR_MIN",
+                "P_PERIOD_ERROR_MAX",
+                "P_SEMI_MAJOR_AXIS",
+                "P_SEMI_MAJOR_AXIS_ERROR_MIN",
+                "P_SEMI_MAJOR_AXIS_ERROR_MAX",
+                "P_ECCENTRICITY",
+                "P_ECCENTRICITY_ERROR_MIN",
+                "P_ECCENTRICITY_ERROR_MAX",
+                "P_TEMP_EQUIL",
+                "P_TEMP_EQUIL_MIN",
+                "P_TEMP_EQUIL_MAX",
+                "P_TEMP_SURF",
+                "P_TEMP_SURF_MIN",
+                "P_TEMP_SURF_MAX",
+                "P_FLUX",
+                "P_FLUX_MIN",
+                "P_FLUX_MAX",
+                "P_TYPE",
+                "P_HABZONE_OPT",
+                "P_HABZONE_CON",
+                "P_HABITABLE",
+                "P_ESI",
+                "S_NAME",
+                "S_TEMPERATURE",
+                "S_TEMPERATURE_ERROR_MIN",
+                "S_TEMPERATURE_ERROR_MAX",
+                "S_MASS",
+                "S_MASS_ERROR_MIN",
+                "S_MASS_ERROR_MAX",
+                "S_RADIUS",
+                "S_RADIUS_ERROR_MIN",
+                "S_RADIUS_ERROR_MAX",
+                "S_LOG_LUM",
+                "S_LOG_LUM_ERROR_MIN",
+                "S_LOG_LUM_ERROR_MAX",
+                "S_METALLICITY",
+                "S_METALLICITY_ERROR_MIN",
+                "S_METALLICITY_ERROR_MAX",
+                "S_DISTANCE",
+                "S_DISTANCE_ERROR_MIN",
+                "S_DISTANCE_ERROR_MAX",
+                "S_TYPE",
+                "S_AGE",
+                "S_AGE_ERROR_MIN",
+                "S_AGE_ERROR_MAX",
+                "S_HZ_OPT_MIN",
+                "S_HZ_OPT_MAX",
+                "S_HZ_CON_MIN",
+                "S_HZ_CON_MAX"
+            ],
+            "refresh": "monthly"
+        },
+        {
+            "id": "gaia_dr3_astrophysical_parameters",
+            "name": "Gaia DR3 Astrophysical Parameters (gspphot / flame)",
+            "description": "Homogeneous stellar parameters derived from Gaia XP spectra and astrometry.",
+            "download_url": "https://gea.esac.esa.int/tap-server/tap/sync",
+            "adql": "SELECT source_id, teff_gspphot, teff_gspphot_lower, teff_gspphot_upper, radius_gspphot, radius_gspphot_lower, radius_gspphot_upper, lum_flame, lum_flame_lower, lum_flame_upper, logg_gspphot, mh_gspphot, ag_gspphot, ebpminrp_gspphot FROM gaiadr3.astrophysical_parameters WHERE source_id IN (<GAIA_ID_LIST>)",
+            "primary_keys": [
+                "source_id"
+            ],
+            "join_keys": {
+                "nasa_exoplanet_archive_pscomppars": [
+                    "gaia_id"
+                ],
+                "gaia_dr3_hosts": [
+                    "Gaia_DR3_source_ID"
+                ]
+            },
+            "columns_to_keep": [
+                "source_id",
+                "teff_gspphot",
+                "teff_gspphot_lower",
+                "teff_gspphot_upper",
+                "radius_gspphot",
+                "radius_gspphot_lower",
+                "radius_gspphot_upper",
+                "lum_flame",
+                "lum_flame_lower",
+                "lum_flame_upper",
+                "logg_gspphot",
+                "mh_gspphot",
+                "ag_gspphot",
+                "ebpminrp_gspphot"
+            ],
+            "refresh": "on_demand"
+        },
+        {
+            "id": "sweet_cat",
+            "name": "SWEET‑Cat (Spectroscopic Properties of Exoplanet Host Stars)",
+            "description": "Homogeneous, high‑resolution spectroscopic parameters for exoplanet hosts (Teff, log g, [Fe/H], etc.).",
+            "download_url": "https://sweetcat.iastro.pt/catalog/SWEETCAT_Dataframe.csv",
+            "primary_keys": [
+                "Name"
+            ],
+            "join_keys": {
+                "nasa_exoplanet_archive_pscomppars": [
+                    "hostname"
+                ],
+                "phl_exoplanet_catalog": [
+                    "S_NAME"
+                ]
+            },
+            "columns_to_keep": [
+                "Name",
+                "Teff",
+                "eTeff",
+                "Logg",
+                "eLogg",
+                "[Fe/H]",
+                "e[Fe/H]",
+                "Vt",
+                "Mass_t",
+                "eMass_t",
+                "Radius_t",
+                "eRadius_t",
+                "gaia_dr3",
+                "Reference",
+                "Update"
+            ],
+            "refresh": "semiannual"
+        }
+    ],
+    "feature_engineering": {
+        "derived_planet_metrics": [
+            "gravity_ms2_from_mass_radius",
+            "density_from_mass_radius",
+            "insolation_from_luminosity_semimajor_axis",
+            "eq_temperature_from_insolation_albedo",
+            "tsi_like_score",
+            "esi_like_score"
+        ],
+        "derived_stellar_metrics": [
+            "hz_inner_outer_bounds_using_kopparapu",
+            "xuv_flux_proxy_from_teff_age",
+            "activity_index_from_logg_teff_if_missing"
+        ]
+    },
+    "quality_filters": {
+        "min_required_columns": [
+            "pl_name",
+            "pl_orbsmax",
+            "pl_rade",
+            "pl_masse",
+            "st_teff",
+            "st_lum"
+        ],
+        "max_fractional_uncertainty": {
+            "pl_rade": 0.5,
+            "pl_masse": 0.5,
+            "pl_orbsmax": 0.5,
+            "st_teff": 0.1
+        }
+    }
+}

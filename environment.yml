@@ -19,6 +19,7 @@ dependencies:
   - xgboost
   - lightgbm
   - pre-commit
+  - pyarrow
   - pip
   - pip:
       - astropy

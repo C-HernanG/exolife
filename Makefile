@@ -1,17 +1,22 @@
-.PHONY: install-env install-dev kernel test lint format clean update activate help
+.PHONY: install-env install-dev kernel test lint format clean clean-data update-env update-exolife activate help
 
 install-env:
 	conda env create -f environment.yml
+	git config commit.template .gitmessage
 
 install-dev:
 	pip install -e .
+	git config commit.template .gitmessage
 
 kernel:
 	python -m ipykernel install --user --name=exolife --display-name="Python (exolife)"
 	@echo "Kernel 'exolife' installed. Use it in Jupyter notebooks."
 
-update:
+update-env:
 	conda env update -f environment.yml --prune
+
+update-exolife:
+	pip install -e . --upgrade
 
 activate:
 	@echo "Run: conda activate exolife"
@@ -20,13 +25,13 @@ test:
 	pytest
 
 lint:
-	flake8 src tests
-	black --check src tests
-	isort --check src tests
+	flake8 src tests scripts
+	black --check src tests scripts
+	isort --check src tests scripts
 
 format:
-	black src tests
-	isort src tests
+	black src tests scripts
+	isort src tests scripts
 
 clean:
 	find . -type f -name "*.pyc" -delete
@@ -34,15 +39,22 @@ clean:
 	find . -type d -name "*.egg-info" -exec rm -rf {} +
 	find . -type d -name ".pytest_cache" -exec rm -rf {} +
 
+clean-data:
+	rm -rf data/raw/*
+	rm -rf data/processed/*
+	rm -rf data/interim/*
+
 help:
 	@echo "Available targets:"
 	@echo "  install-env - Install conda environment from environment.yml"
 	@echo "  install-dev - Install development dependencies"
 	@echo "  kernel    - Install Jupyter kernel for this environment"
-	@echo "  update   - Update conda environment"
+	@echo "  update-env   - Update conda environment"
+	@echo "  update-exolife - Update ExoLife package"
 	@echo "  activate - Show activation command"
 	@echo "  test     - Run pytest"
 	@echo "  lint     - Run linting checks (flake8, black, isort)"
 	@echo "  format   - Format code with black and isort"
 	@echo "  clean    - Remove Python cache files and artifacts"
+	@echo "  clean-data - Remove data directories"
 	@echo "  help     - Show this help message"

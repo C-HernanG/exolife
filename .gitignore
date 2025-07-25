@@ -96,5 +96,6 @@ Icon?
 LICENSE~
 
 # Ignore all data but keep the folder (via .gitkeep)
-data/
-!data/.gitkeep
+# Only root-level data folder
+/data/*
+!/data/external/
