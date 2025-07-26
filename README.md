@@ -2,16 +2,12 @@
 
 This project is oriented toward developing a machine learning model capable of estimating the habitability of exoplanets from astrophysical data, with the aim of supporting astrobiological research and exoplanetary exploration. The model is trained on mixed-origin data, combining observational measurements from public astronomical catalogs (such as the NASA Exoplanet Archive, PHL Exoplanet Catalog, GAIA, and SWEET-Cat), simulated planetary parameters, and derived metrics like equilibrium temperature, stellar flux, or Earth Similarity Index. By integrating heterogeneous sources of information, the system aims to produce a more comprehensive and generalizable habitability estimator applicable to a wide range of known and future exoplanets.
 
----
-
 ## Project Goals
 
 - Estimate exoplanet habitability using real and simulated astrophysical features.
 - Support research in astrobiology and planetary science.
 - Develop a generalizable model applicable to both cataloged and hypothetical planets.
 - Provide an open framework for reproducible experimentation and future integration.
-
----
 
 ## Getting Started
 
@@ -41,8 +37,6 @@ pip install -e .
 python -m ipykernel install --user --name=exolife --display-name "Python (Exolife)"
 ```
 
----
-
 ## ExoLife CLI Commands
 
 The ExoLife CLI is used to manage data ingestion, merging strategies, and model-related workflows.  
@@ -51,8 +45,6 @@ For a full list of available commands and usage instructions, run:
 ```bash
 exolife info
 ```
-
----
 
 ## Development & Testing
 
@@ -73,16 +65,12 @@ make help       # Show all available commands
 jupyter lab
 ```
 
----
-
 ## Data Sources
 
 - [NASA Exoplanet Archive](https://exoplanetarchive.ipac.caltech.edu/) – Comprehensive database of confirmed exoplanets  
 - [PHL Exoplanet Catalog](http://phl.upr.edu/projects/habitable-exoplanets-catalog) – Habitability-focused planetary database  
 - [GAIA DR3](https://gea.esac.esa.int/archive/) – High-precision astrometric and stellar parameter data  
 - [SWEET-Cat](https://www.astro.up.pt/resources/sweet-cat/) – Homogenized stellar parameters for planet-hosting stars  
-
----
 
 ## Collaboration Guidelines
 
@@ -94,13 +82,9 @@ git commit
 
 Your default editor will open a file with commented instructions. Please write your commit message at the top following the suggested format. This helps maintain a clean and consistent commit history across the project.
 
----
-
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
-
----
 
 ## Acknowledgments
 
