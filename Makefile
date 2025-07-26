@@ -43,6 +43,7 @@ clean-data:
 	rm -rf data/raw/*
 	rm -rf data/processed/*
 	rm -rf data/interim/*
+	rm -rf data/merged/*
 
 help:
 	@echo "Available targets:"
