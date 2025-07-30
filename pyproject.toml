@@ -39,6 +39,7 @@ dependencies = [
     "joblib",
     "requests",
     "pyyaml",
+    "pydantic",
 ]
 
 [project.optional-dependencies]

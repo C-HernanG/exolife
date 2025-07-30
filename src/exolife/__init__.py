@@ -4,11 +4,7 @@ ExoLife: A toolkit for exoplanet habitability estimation.
 Subpackages
 -----------
 - data:        I/O and data ingestion
-- evaluation:  Metrics and evaluation routines
-- features:    Feature engineering and transformations
-- models:      ML model definitions
 - pipeline:    Orchestrated end-to-end workflows
-- training:    Training loops and utilities
 """
 
 from __future__ import annotations
@@ -22,17 +18,7 @@ except PackageNotFoundError:  # local editable install
 
 __all__ = [
     "data",
-    # "evaluation",
-    # "features",
-    # "models",
-    # "pipeline",
-    # "training",
+    "pipeline",
 ]
 
-from . import data
-
-# from . import evaluation
-# from . import features
-# from . import models
-# from . import pipeline
-# from . import training
+from . import data, pipeline

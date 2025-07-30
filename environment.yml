@@ -20,6 +20,7 @@ dependencies:
   - lightgbm
   - pre-commit
   - pyarrow
+  - pydantic
   - pip
   - pip:
       - astropy
@@ -29,3 +30,4 @@ dependencies:
       - joblib
       - requests
       - pyyaml
+      - click

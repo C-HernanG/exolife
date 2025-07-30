@@ -2,27 +2,21 @@
 ExoLife data package: fetching, merging, and preprocessing.
 """
 
-from .data_pipelines import (  # noqa: F401
-    DataPipeline,
-    available_data_pipelines,
-    get_data_pipeline,
-)
-from .fetchers import (  # noqa: F401
-    DataSource,
-    fetch_all_sources,
-    fetch_source,
-    list_data_sources,
-)
-from .mergers import list_mergers, merge_data  # noqa: F401
+from .fetch import BaseFetcher, DataSourceConfig, FetcherRegistry, register_fetcher
+from .merge import BaseMergeStrategy, MergeConfig, MergeStrategyFactory
+from .preprocess import BasePreprocessor, PreprocessorConfig
+from .utils import list_data_sources, load_config
 
 __all__ = [
-    "DataSource",
+    "BaseFetcher",
+    "DataSourceConfig",
+    "FetcherRegistry",
+    "register_fetcher",
+    "BaseMergeStrategy",
+    "MergeConfig",
+    "MergeStrategyFactory",
+    "BasePreprocessor",
+    "PreprocessorConfig",
     "list_data_sources",
-    "fetch_source",
-    "fetch_all_sources",
-    "list_mergers",
-    "merge_data",
-    "DataPipeline",
-    "available_data_pipelines",
-    "get_data_pipeline",
+    "load_config",
 ]

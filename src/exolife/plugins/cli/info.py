@@ -10,7 +10,9 @@ from importlib.metadata import PackageNotFoundError, version
 
 import click
 
-from exolife.data import available_data_pipelines, list_data_sources, list_mergers
+from exolife.data.fetch import get_fetcher_info
+from exolife.data.merge.merge_factory import get_merge_strategy_info
+from exolife.data.preprocess import get_preprocessor_info
 
 # Configure module-level logger
 logger = logging.getLogger("exolife.cli.info")
@@ -33,17 +35,38 @@ def cli() -> None:
 
     click.echo(f"ExoLife version: {pkg_version}")
 
-    # List data sources
-    click.echo("\nAvailable data sources:")
-    for src in list_data_sources():
-        click.echo(f"  - {src}")
+    # Show available data fetchers
+    click.echo("\nAvailable data fetchers:")
+    try:
+        fetcher_info = get_fetcher_info()
+        for fetcher_type, description in fetcher_info.items():
+            click.echo(f"  - {fetcher_type}: {description}")
+    except Exception as e:
+        click.echo(f"  Error loading fetcher information: {e}")
 
-    # List merge methods
-    click.echo("\nAvailable merge methods:")
-    for method in list_mergers():
-        click.echo(f"  - {method}")
+    # List available merge strategies
+    click.echo("\nAvailable merge strategies:")
+    try:
+        merge_info = get_merge_strategy_info()
+        for strategy_name, description in merge_info.items():
+            click.echo(f"  - {strategy_name}: {description}")
+    except Exception as e:
+        click.echo(f"  Error loading merge strategies: {e}")
 
-    # List data pipelines
-    click.echo("\nAvailable data pipelines:")
-    for pipeline in available_data_pipelines():
-        click.echo(f"  - {pipeline}")
+    # Show available preprocessors
+    click.echo("\nAvailable preprocessors:")
+    try:
+        preprocessor_info = get_preprocessor_info()
+        for preprocessor_name, description in preprocessor_info.items():
+            click.echo(f"  - {preprocessor_name}: {description}")
+    except Exception as e:
+        click.echo(f"  Error loading preprocessor information: {e}")
+
+    # Show current configuration
+    click.echo("\nCurrent configuration:")
+    from exolife.settings import Settings
+
+    settings = Settings()
+    click.echo(f"  Data directory: {settings.data_dir}")
+    click.echo(f"  Log level: {settings.log_level}")
+    click.echo(f"  Max workers: {settings.max_workers}")

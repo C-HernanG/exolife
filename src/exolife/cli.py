@@ -9,19 +9,38 @@ import pkgutil
 
 import click
 
-# Configure logger for the CLI
+from exolife.settings import Settings
+
+# Logging configuration
 logger = logging.getLogger(__name__)
 handler = logging.StreamHandler()
 formatter = logging.Formatter("%(asctime)s %(levelname)s [%(name)s] %(message)s")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
-logger.setLevel(logging.INFO)
+
+# Load global settings
+settings = Settings()
+logger.setLevel(getattr(logging, settings.log_level.upper()))
 
 
 @click.group()
-def main():
-    """ExoLife CLI entrypoint."""
-    pass
+@click.option("--log-level", default=settings.log_level, help="Set logging level")
+@click.option("--force", is_flag=True, help="Force refresh of cached data")
+@click.pass_context
+def main(ctx, log_level, force):
+    """
+    ExoLife CLI
+    """
+    ctx.ensure_object(dict)
+    ctx.obj["log_level"] = log_level
+    ctx.obj["force"] = force
+
+    # Update logging level
+    logger.setLevel(getattr(logging, log_level.upper()))
+
+    # Update global settings
+    settings.log_level = log_level
+    settings.force_refresh = force
 
 
 def load_commands():
@@ -42,7 +61,7 @@ def load_commands():
             logger.error(f"Failed to load plugin {full_name}: {e}")
 
 
-# Load all plugin commands at import time
+# Load all plugin commands
 load_commands()
 
 if __name__ == "__main__":

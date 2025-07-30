@@ -21,29 +21,36 @@ cd exolife
 ### 2. Create the Conda Environment
 
 ```bash
-conda env create -f environment.yml
+make install-env
 conda activate exolife
 ```
 
 ### 3. (Optional) Install Package in Development Mode
 
 ```bash
-pip install -e .
+make install-dev
 ```
 
 ### 4. (Optional) Register Jupyter Kernel
 
 ```bash
-python -m ipykernel install --user --name=exolife --display-name "Python (Exolife)"
+make kernel
 ```
 
 ## ExoLife CLI Commands
 
-The ExoLife CLI is used to manage data ingestion, merging strategies, and model-related workflows.  
+The ExoLife CLI is used to manage data ingestion, merging strategies, and model-related workflows.
+
+For example, to execute a data pipeline defined as a DAG:
+
+```bash
+exolife dag run [OPTIONS] DAG_FILE
+```
+
 For a full list of available commands and usage instructions, run:
 
 ```bash
-exolife info
+exolife --help
 ```
 
 ## Development & Testing
@@ -51,18 +58,11 @@ exolife info
 ### Using Make Commands
 
 ```bash
-make install    # Create conda environment
-make test       # Run tests
-make lint       # Run code quality checks
-make format     # Format code with black and isort
-make clean      # Clean up cache files
-make help       # Show all available commands
-```
-
-### Launch Jupyter Lab
-
-```bash
-jupyter lab
+make test           # Run tests
+make lint           # Run code quality checks
+make format         # Format code with black and isort
+make clean          # Clean up cache files
+make help           # Show all available commands
 ```
 
 ## Data Sources
