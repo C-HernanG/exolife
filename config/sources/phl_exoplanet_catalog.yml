@@ -1,0 +1,31 @@
+id: "phl_exoplanet_catalog"
+name: "PHL Exoplanet Catalog (HEC)"
+description: "Catalog with habitability‑oriented metrics (ESI, HZ flags, surface‑temperature estimates)."
+download_url: "https://www.hpcf.upr.edu/~abel/phl/hec2/database/phl_exoplanet_catalog.csv"
+
+primary_keys:
+  - "P_NAME"
+
+join_keys:
+  nasa_exoplanet_archive_pscomppars:
+    - "pl_name"
+  gaia_dr3_hosts:
+    - "Gaia_confirmed_ID"
+
+columns_to_keep:
+  - "P_NAME"
+  - "S_NAME"
+  - "P_UPDATED"
+  - "P_TEMP_SURF"
+  - "P_TEMP_SURF_MIN"
+  - "P_TEMP_SURF_MAX"
+  - "P_TYPE"
+  - "P_HABZONE_OPT"
+  - "P_HABZONE_CON"
+  - "P_HABITABLE"
+  - "P_ESI"
+  - "S_TYPE"
+  - "S_HZ_OPT_MIN"
+  - "S_HZ_OPT_MAX"
+  - "S_HZ_CON_MIN"
+  - "S_HZ_CON_MAX"

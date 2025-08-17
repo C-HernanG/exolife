@@ -1,0 +1,15 @@
+# Feature Engineering Configuration
+# Defines derived metrics to be computed during preprocessing
+
+derived_planet_metrics:
+  - gravity_ms2_from_mass_radius
+  - density_from_mass_radius
+  - insolation_from_luminosity_semimajor_axis
+  - eq_temperature_from_insolation_albedo
+  - tsi_like_score
+  - esi_like_score
+
+derived_stellar_metrics:
+  - hz_inner_outer_bounds_using_kopparapu
+  - xuv_flux_proxy_from_teff_age
+  - activity_index_from_logg_teff_if_missing

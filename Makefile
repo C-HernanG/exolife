@@ -25,13 +25,12 @@ test:
 	pytest
 
 lint:
-	flake8 src tests scripts
-	black --check src tests scripts
-	isort --check src tests scripts
+	ruff check --diff .
+	black --check --diff .
 
 format:
-	black src tests scripts
-	isort src tests scripts
+	ruff check --fix .
+	black .
 
 clean:
 	find . -type f -name "*.pyc" -delete

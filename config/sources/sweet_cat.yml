@@ -1,0 +1,30 @@
+id: "sweet_cat"
+name: "SWEET‑Cat (Spectroscopic Properties of Exoplanet Host Stars)"
+description: "Homogeneous, high‑resolution spectroscopic parameters for exoplanet hosts (Teff, log g, [Fe/H], etc.)."
+download_url: "https://sweetcat.iastro.pt/catalog/SWEETCAT_Dataframe.csv"
+
+primary_keys:
+  - "Name"
+
+join_keys:
+  nasa_exoplanet_archive_pscomppars:
+    - "hostname"
+  phl_exoplanet_catalog:
+    - "S_NAME"
+
+columns_to_keep:
+  - "Name"
+  - "Teff"
+  - "eTeff"
+  - "Logg"
+  - "eLogg"
+  - "[Fe/H]"
+  - "e[Fe/H]"
+  - "Vt"
+  - "Mass_t"
+  - "eMass_t"
+  - "Radius_t"
+  - "eRadius_t"
+  - "gaia_dr3"
+  - "Reference"
+  - "Update"

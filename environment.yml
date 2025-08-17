@@ -4,8 +4,6 @@ channels:
 dependencies:
   - python=3.11
   - black
-  - isort
-  - flake8
   - pytest
   - numpy
   - pandas
@@ -31,3 +29,5 @@ dependencies:
       - requests
       - pyyaml
       - click
+      - pydantic-settings
+      - ruff

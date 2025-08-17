@@ -1,0 +1,16 @@
+# Quality Filters Configuration
+# Defines data quality criteria and filtering rules
+
+min_required_columns:
+  - pl_name
+  - pl_orbsmax
+  - pl_rade
+  - pl_masse
+  - st_teff
+  - st_lum
+
+max_fractional_uncertainty:
+  pl_rade: 0.5
+  pl_masse: 0.5
+  pl_orbsmax: 0.5
+  st_teff: 0.1

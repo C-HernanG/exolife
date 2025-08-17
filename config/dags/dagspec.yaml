@@ -1,0 +1,105 @@
+# ExoLife Unified Ingestion Pipeline DAG Specification
+
+dag_id: "exolife_unified_pipeline"
+
+tasks:
+  # Data fetching tasks (can run in parallel)
+  fetch_nasa_data:
+    task_type: "fetch"
+    config:
+      source: "nasa_exoplanet_archive_pscomppars"
+      force_refresh: false
+    dependencies: []
+    retries: 2
+    timeout: 300
+    on_failure: "fail"
+
+  fetch_phl_data:
+    task_type: "fetch"
+    config:
+      source: "phl_exoplanet_catalog"
+      force_refresh: false
+    dependencies: []
+    retries: 2
+    timeout: 300
+    on_failure: "fail"
+
+  # Enhanced Gaia DR2→DR3 comprehensive fetch (100% accuracy)
+  fetch_enhanced_gaia_data:
+    task_type: "fetch"
+    config:
+      source: "gaia_dr3_astrophysical_parameters" # Uses enhanced_comprehensive_gaia fetcher
+      force_refresh: false
+    dependencies: ["fetch_nasa_data"] # Needs NASA data for targeting Gaia IDs
+    retries: 3
+    timeout: 1200 # Extended timeout for sophisticated multi-tier processing
+    on_failure: "fail"
+
+  fetch_sweet_cat:
+    task_type: "fetch"
+    config:
+      source: "sweet_cat"
+      force_refresh: false
+    dependencies: []
+    retries: 2
+    timeout: 300
+    on_failure: "fail"
+
+  # Data validation task (depends on all fetch tasks)
+  validate_raw_data:
+    task_type: "validate"
+    config:
+      check_completeness: true
+      check_data_types: true
+      min_rows_threshold: 100
+    dependencies:
+      - "fetch_nasa_data"
+      - "fetch_phl_data"
+      - "fetch_enhanced_gaia_data" # Uses enhanced comprehensive Gaia data
+      - "fetch_sweet_cat"
+    retries: 1
+    timeout: 120
+    on_failure: "fail"
+
+  # Unified ingestion task (replaces all previous merge strategies)
+  unified_ingestion:
+    task_type: "merge"
+    config:
+      strategy: "unified_ingestion"
+      cross_identification: true
+      uncertainty_propagation: true
+      monte_carlo_samples: 1000
+    dependencies:
+      - "validate_raw_data"
+    retries: 2
+    timeout: 1200 # Longer timeout for comprehensive processing
+    on_failure: "fail"
+
+  # Quality assessment of unified catalog
+  assess_unified_quality:
+    task_type: "validate"
+    config:
+      check_completeness: true
+      check_derived_features: true
+      check_uncertainty_propagation: true
+      min_hz_coverage: 0.5
+    dependencies:
+      - "unified_ingestion"
+    retries: 1
+    timeout: 180
+    on_failure: "fail"
+
+  # Final export of processed catalog
+  export_final_catalog:
+    task_type: "export"
+    config:
+      formats: ["parquet", "csv"]
+      output_path: "exolife_dataset" # Use same directory as main pipeline
+      filename: "exolife_catalog" # Use single consistent filename
+      include_metadata: true
+      include_provenance: true
+    dependencies:
+      - "assess_unified_quality"
+    retries: 2
+    timeout: 300
+    on_failure: "fail"

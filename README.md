@@ -39,12 +39,26 @@ make kernel
 
 ## ExoLife CLI Commands
 
-The ExoLife CLI is used to manage data ingestion, merging strategies, and model-related workflows.
+The ExoLife CLI manages the unified ingestion pipeline that harmonizes multi-mission astrophysical catalogs with uncertainty propagation and cross-identification.
 
-For example, to execute a data pipeline defined as a DAG:
+### Unified Ingestion Pipeline
+
+ExoLife now uses a single, comprehensive ingestion approach that:
+- Cross-identifies sources via Gaia source_id and (host, letter) pairs
+- Propagates uncertainties via Monte Carlo sampling (N=1000)
+- Derives features with uncertainty quantification
+- Maintains data provenance and quality indicators
 
 ```bash
-exolife dag run [OPTIONS] DAG_FILE
+# Run unified ingestion pipeline
+exolife merge unified_ingestion
+
+# Execute complete pipeline with validation
+exolife dag run config/dags/dagspec.yaml
+
+# Legacy methods (all map to unified pipeline)
+exolife merge baseline
+exolife merge gaia_enriched
 ```
 
 For a full list of available commands and usage instructions, run:
@@ -71,6 +85,33 @@ make help           # Show all available commands
 - [PHL Exoplanet Catalog](http://phl.upr.edu/projects/habitable-exoplanets-catalog) – Habitability-focused planetary database  
 - [GAIA DR3](https://gea.esac.esa.int/archive/) – High-precision astrometric and stellar parameter data  
 - [SWEET-Cat](https://www.astro.up.pt/resources/sweet-cat/) – Homogenized stellar parameters for planet-hosting stars  
+
+## Configuration Structure
+
+ExoLife uses a YAML-based configuration system organized in the `config/` directory:
+
+```
+config/
+├── constants/          # Physical constants and parameters
+│   ├── hz.yml          # Habitable zone coefficients
+│   ├── feature_engineering.yml
+│   ├── quality_filters.yml
+│   └── drop_columns.yml
+├── sources/            # Data source configurations
+│   ├── nasa_exoplanet_archive_pscomppars.yml
+│   ├── phl_exoplanet_catalog.yml
+│   ├── gaia_dr3_astrophysical_parameters.yml
+│   └── sweet_cat.yml
+├── merges/             # Data merging strategies
+│   ├── baseline.yml
+│   ├── comprehensive.yml
+│   └── gaia_enriched.yml
+├── dags/               # Pipeline workflow specifications
+│   └── dagspec.yaml
+└── project.yml         # Project metadata
+```
+
+This modular configuration system allows for easy customization and extension of data sources, processing parameters, and workflow definitions.  
 
 ## Collaboration Guidelines
 
