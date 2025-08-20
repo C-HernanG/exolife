@@ -3,9 +3,7 @@ Tests for the ExoLife settings module.
 """
 
 import os
-import tempfile
 from pathlib import Path
-import pytest
 
 from exolife.settings import Settings
 
@@ -18,10 +16,10 @@ class TestSettings:
         settings = Settings()
 
         # Check that basic settings exist
-        assert hasattr(settings, 'root_dir')
-        assert hasattr(settings, 'data_dir')
-        assert hasattr(settings, 'max_workers')
-        assert hasattr(settings, 'log_level')
+        assert hasattr(settings, "root_dir")
+        assert hasattr(settings, "data_dir")
+        assert hasattr(settings, "max_workers")
+        assert hasattr(settings, "log_level")
 
         # Check default values
         assert settings.max_workers == 4
@@ -38,7 +36,7 @@ class TestSettings:
             max_workers=8,
             log_level="DEBUG",
             request_timeout=600,
-            force_refresh=True
+            force_refresh=True,
         )
 
         assert settings.root_dir == temp_dir
@@ -61,9 +59,9 @@ class TestSettings:
     def test_environment_variable_override(self, temp_dir):
         """Test that environment variables override default settings."""
         # Set environment variables
-        os.environ['EXOLIFE_MAX_WORKERS'] = '16'
-        os.environ['EXOLIFE_LOG_LEVEL'] = 'WARNING'
-        os.environ['EXOLIFE_FORCE_REFRESH'] = 'true'
+        os.environ["EXOLIFE_MAX_WORKERS"] = "16"
+        os.environ["EXOLIFE_LOG_LEVEL"] = "WARNING"
+        os.environ["EXOLIFE_FORCE_REFRESH"] = "true"
 
         try:
             settings = Settings(root_dir=temp_dir)
@@ -75,7 +73,11 @@ class TestSettings:
 
         finally:
             # Clean up environment variables
-            for var in ['EXOLIFE_MAX_WORKERS', 'EXOLIFE_LOG_LEVEL', 'EXOLIFE_FORCE_REFRESH']:
+            for var in [
+                "EXOLIFE_MAX_WORKERS",
+                "EXOLIFE_LOG_LEVEL",
+                "EXOLIFE_FORCE_REFRESH",
+            ]:
                 os.environ.pop(var, None)
 
     def test_directory_validation(self, temp_dir):
@@ -129,7 +131,7 @@ class TestSettings:
 
     def test_global_settings_import(self):
         """Test that global settings constants are available."""
-        from exolife.settings import ROOT, DATA_DIR, RAW_DIR, INTERIM_DIR, PROCESSED_DIR
+        from exolife.settings import DATA_DIR, INTERIM_DIR, PROCESSED_DIR, RAW_DIR, ROOT
 
         # These should be Path objects
         assert isinstance(ROOT, Path)

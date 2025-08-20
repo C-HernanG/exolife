@@ -3,12 +3,14 @@ Tests for the ExoLife DAG (Directed Acyclic Graph) module.
 """
 
 import pytest
-import yaml
-from pathlib import Path
 
 from exolife.pipeline.dag import (
-    DAG, TaskNode, TaskStatus, TaskResult, CycleDetectedError,
-    load_dag_from_yaml, save_dag_to_yaml
+    DAG,
+    TaskNode,
+    TaskResult,
+    TaskStatus,
+    load_dag_from_yaml,
+    save_dag_to_yaml,
 )
 
 
@@ -24,7 +26,7 @@ class TestTaskNode:
             dependencies=["dep1", "dep2"],
             retries=3,
             timeout=60.0,
-            on_failure="skip"
+            on_failure="skip",
         )
 
         assert task.task_id == "test_task"
@@ -72,7 +74,7 @@ class TestTaskResult:
             status=TaskStatus.SUCCESS,
             output={"rows": 100},
             execution_time=5.5,
-            metadata={"source": "test"}
+            metadata={"source": "test"},
         )
 
         assert result.task_id == "test_task"
@@ -151,9 +153,7 @@ class TestDAG:
         """Test validation with missing dependency."""
         dag = DAG("test", "Test")
         task = TaskNode(
-            task_id="task1",
-            task_type="fetch",
-            dependencies=["missing_task"]
+            task_id="task1", task_type="fetch", dependencies=["missing_task"]
         )
         dag.add_task(task)
 
@@ -367,9 +367,7 @@ class TestDAGValidationEdgeCases:
         """Test task depending on itself."""
         dag = DAG("test", "Test")
         task = TaskNode(
-            task_id="self_dep",
-            task_type="fetch",
-            dependencies=["self_dep"]
+            task_id="self_dep", task_type="fetch", dependencies=["self_dep"]
         )
         dag.add_task(task)
 
@@ -384,8 +382,7 @@ class TestDAGValidationEdgeCases:
         # Create: A -> B -> C -> D -> B (cycle involving B, C, D)
         tasks = [
             TaskNode(task_id="A", task_type="fetch", dependencies=[]),
-            TaskNode(task_id="B", task_type="process",
-                     dependencies=["A", "D"]),
+            TaskNode(task_id="B", task_type="process", dependencies=["A", "D"]),
             TaskNode(task_id="C", task_type="transform", dependencies=["B"]),
             TaskNode(task_id="D", task_type="merge", dependencies=["C"]),
         ]
@@ -402,12 +399,9 @@ class TestDAGValidationEdgeCases:
         dag = DAG("test", "Test")
 
         # Task with missing dependency + cycle
-        task1 = TaskNode(task_id="task1", task_type="fetch",
-                         dependencies=["missing"])
-        task2 = TaskNode(task_id="task2", task_type="process",
-                         dependencies=["task3"])
-        task3 = TaskNode(task_id="task3", task_type="merge",
-                         dependencies=["task2"])
+        task1 = TaskNode(task_id="task1", task_type="fetch", dependencies=["missing"])
+        task2 = TaskNode(task_id="task2", task_type="process", dependencies=["task3"])
+        task3 = TaskNode(task_id="task3", task_type="merge", dependencies=["task2"])
 
         dag.add_task(task1)
         dag.add_task(task2)

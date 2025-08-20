@@ -2,15 +2,14 @@
 Tests for the ExoLife data fetcher modules.
 """
 
-import pytest
-from unittest.mock import Mock, patch, MagicMock
 from pathlib import Path
+from unittest.mock import patch
+
 import pandas as pd
+import pytest
 import requests
 
-from exolife.data.fetch.fetcher_base import (
-    BaseFetcher, DataSourceConfig, FetchResult
-)
+from exolife.data.fetch.fetcher_base import BaseFetcher, DataSourceConfig, FetchResult
 from exolife.data.fetch.fetchers.http_fetcher import HttpFetcher
 from exolife.data.fetch.manager import FetchManager
 from exolife.data.fetch.registry import FetcherRegistry, register_fetcher
@@ -30,7 +29,7 @@ class TestDataSourceConfig:
             primary_keys=["id"],
             join_keys={"other": ["key"]},
             format="csv",
-            timeout=120
+            timeout=120,
         )
 
         assert config.id == "test_source"
@@ -42,9 +41,7 @@ class TestDataSourceConfig:
     def test_data_source_config_defaults(self):
         """Test DataSourceConfig with default values."""
         config = DataSourceConfig(
-            id="minimal",
-            name="Minimal",
-            description="Minimal config"
+            id="minimal", name="Minimal", description="Minimal config"
         )
 
         assert config.columns_to_keep == []
@@ -55,10 +52,7 @@ class TestDataSourceConfig:
     def test_data_source_config_extra_fields(self):
         """Test that extra fields are allowed."""
         config = DataSourceConfig(
-            id="test",
-            name="Test",
-            description="Test",
-            custom_field="custom_value"
+            id="test", name="Test", description="Test", custom_field="custom_value"
         )
 
         # Should be accessible as attribute
@@ -78,7 +72,7 @@ class TestFetchResult:
             path=output_path,
             success=True,
             rows_fetched=100,
-            size_bytes=1024
+            size_bytes=1024,
         )
 
         assert result.source_id == "test_source"
@@ -94,7 +88,7 @@ class TestFetchResult:
             source_id="failed_source",
             path=None,
             success=False,
-            error_message="Download failed"
+            error_message="Download failed",
         )
 
         assert result.success is False
@@ -113,7 +107,7 @@ class MockFetcher(BaseFetcher):
             source_id=self.config.id,
             path=Path("mock_path.parquet"),
             success=True,
-            rows_fetched=10
+            rows_fetched=10,
         )
 
     @property
@@ -158,7 +152,9 @@ class TestBaseFetcher:
         # Now should be cached
         assert fetcher.is_cached(temp_dir) is True
 
-    def test_save_and_load_dataframe(self, mock_data_source_config, temp_dir, sample_dataframe):
+    def test_save_and_load_dataframe(
+        self, mock_data_source_config, temp_dir, sample_dataframe
+    ):
         """Test DataFrame save and load operations."""
         fetcher = MockFetcher(mock_data_source_config)
         output_path = temp_dir / "test_data.parquet"
@@ -171,7 +167,9 @@ class TestBaseFetcher:
         loaded_df = fetcher.load_dataframe(output_path)
         pd.testing.assert_frame_equal(loaded_df, sample_dataframe)
 
-    def test_load_dataframe_specific_columns(self, mock_data_source_config, temp_dir, sample_dataframe):
+    def test_load_dataframe_specific_columns(
+        self, mock_data_source_config, temp_dir, sample_dataframe
+    ):
         """Test loading specific columns from DataFrame."""
         fetcher = MockFetcher(mock_data_source_config)
         output_path = temp_dir / "test_data.parquet"
@@ -241,25 +239,29 @@ class TestHttpFetcher:
         fetcher = HttpFetcher(mock_data_source_config)
         assert fetcher.fetcher_type == "http"
 
-    @patch('exolife.data.fetch.fetchers.http_fetcher.stream_download')
-    @patch('exolife.data.fetch.fetchers.http_fetcher.write_generic')
-    def test_successful_fetch(self, mock_write, mock_download, mock_data_source_config,
-                              temp_dir, sample_csv_content, test_settings):
+    @patch("exolife.data.fetch.fetchers.http_fetcher.stream_download")
+    @patch("exolife.data.fetch.fetchers.http_fetcher.write_generic")
+    def test_successful_fetch(
+        self,
+        mock_write,
+        mock_download,
+        mock_data_source_config,
+        temp_dir,
+        sample_csv_content,
+        test_settings,
+    ):
         """Test successful HTTP fetch."""
         # Setup mocks
-        mock_download.return_value = sample_csv_content.encode('utf-8')
+        mock_download.return_value = sample_csv_content.encode("utf-8")
 
-        sample_df = pd.DataFrame({
-            'pl_name': ['Test Planet'],
-            'st_teff': [5000.0]
-        })
+        sample_df = pd.DataFrame({"pl_name": ["Test Planet"], "st_teff": [5000.0]})
         mock_write.return_value = sample_df
 
         # Configure fetcher
         config = mock_data_source_config.model_copy()
         config.download_url = "https://example.com/data.csv"
 
-        with patch('exolife.data.fetch.fetchers.http_fetcher.settings', test_settings):
+        with patch("exolife.data.fetch.fetchers.http_fetcher.settings", test_settings):
             fetcher = HttpFetcher(config)
             result = fetcher.fetch()
 
@@ -272,9 +274,10 @@ class TestHttpFetcher:
         mock_download.assert_called_once_with(config.download_url)
         mock_write.assert_called_once()
 
-    @patch('exolife.data.fetch.fetchers.http_fetcher.stream_download')
-    def test_fetch_with_download_failure(self, mock_download, mock_data_source_config,
-                                         temp_dir, test_settings):
+    @patch("exolife.data.fetch.fetchers.http_fetcher.stream_download")
+    def test_fetch_with_download_failure(
+        self, mock_download, mock_data_source_config, temp_dir, test_settings
+    ):
         """Test fetch when download fails."""
         # Mock download failure
         mock_download.side_effect = requests.RequestException("Network error")
@@ -282,7 +285,7 @@ class TestHttpFetcher:
         config = mock_data_source_config.model_copy()
         config.download_url = "https://example.com/data.csv"
 
-        with patch('exolife.data.fetch.fetchers.http_fetcher.settings', test_settings):
+        with patch("exolife.data.fetch.fetchers.http_fetcher.settings", test_settings):
             fetcher = HttpFetcher(config)
             result = fetcher.fetch()
 
@@ -299,18 +302,19 @@ class TestHttpFetcher:
         assert source.name == mock_data_source_config.name
         assert source.download_url == mock_data_source_config.download_url
 
-    def test_create_fallback_dataset(self, mock_data_source_config, temp_dir, test_settings):
+    def test_create_fallback_dataset(
+        self, mock_data_source_config, temp_dir, test_settings
+    ):
         """Test fallback dataset creation."""
         config = mock_data_source_config.model_copy()
         config.columns_to_keep = ["col1", "col2"]
         config.primary_keys = ["col1"]
 
-        with patch('exolife.data.fetch.fetchers.http_fetcher.settings', test_settings):
+        with patch("exolife.data.fetch.fetchers.http_fetcher.settings", test_settings):
             fetcher = HttpFetcher(config)
             output_path = temp_dir / "fallback.parquet"
 
-            result = fetcher._create_fallback_dataset(
-                output_path, "Test error")
+            result = fetcher._create_fallback_dataset(output_path, "Test error")
 
         assert result.success is True
         assert "Test error" in result.error_message
@@ -369,8 +373,7 @@ class TestFetcherRegistry:
             def fetcher_type(self):
                 return "mock_test"
 
-        fetcher_class = registry.get_fetcher_for_config(
-            mock_data_source_config)
+        fetcher_class = registry.get_fetcher_for_config(mock_data_source_config)
         assert fetcher_class == MockTestFetcher
 
     def test_get_fetcher_no_match(self):
@@ -378,9 +381,7 @@ class TestFetcherRegistry:
         registry = FetcherRegistry()
 
         config = DataSourceConfig(
-            id="unhandleable",
-            name="Unhandleable",
-            description="Cannot be handled"
+            id="unhandleable", name="Unhandleable", description="Cannot be handled"
         )
 
         with pytest.raises(ValueError, match="No fetcher found"):
@@ -413,24 +414,29 @@ class TestFetchManager:
 
     def test_fetch_manager_creation(self, test_settings):
         """Test FetchManager creation."""
-        with patch('exolife.data.fetch.manager.settings', test_settings):
+        with patch("exolife.data.fetch.manager.settings", test_settings):
             manager = FetchManager()
 
             assert manager.settings == test_settings
-            assert hasattr(manager, 'registry')
+            assert hasattr(manager, "registry")
 
-    def test_fetch_single_source(self, mock_data_source_config, test_settings, sample_csv_content):
+    def test_fetch_single_source(
+        self, mock_data_source_config, test_settings, sample_csv_content
+    ):
         """Test fetching a single data source."""
         config = mock_data_source_config.model_copy()
         config.download_url = "https://example.com/data.csv"
 
-        with patch('exolife.data.fetch.manager.settings', test_settings):
-            with patch('exolife.data.fetch.fetchers.http_fetcher.stream_download') as mock_download:
-                with patch('exolife.data.fetch.fetchers.http_fetcher.write_generic') as mock_write:
+        with patch("exolife.data.fetch.manager.settings", test_settings):
+            with patch(
+                "exolife.data.fetch.fetchers.http_fetcher.stream_download"
+            ) as mock_download:
+                with patch(
+                    "exolife.data.fetch.fetchers.http_fetcher.write_generic"
+                ) as mock_write:
                     # Setup mocks
-                    mock_download.return_value = sample_csv_content.encode(
-                        'utf-8')
-                    sample_df = pd.DataFrame({'col': [1, 2, 3]})
+                    mock_download.return_value = sample_csv_content.encode("utf-8")
+                    sample_df = pd.DataFrame({"col": [1, 2, 3]})
                     mock_write.return_value = sample_df
 
                     manager = FetchManager()
@@ -446,20 +452,19 @@ class TestFetchManager:
                 id="source1",
                 name="Source 1",
                 description="First source",
-                download_url="https://example.com/data1.csv"
+                download_url="https://example.com/data1.csv",
             ),
             DataSourceConfig(
                 id="source2",
                 name="Source 2",
                 description="Second source",
-                download_url="https://example.com/data2.csv"
-            )
+                download_url="https://example.com/data2.csv",
+            ),
         ]
 
-        with patch('exolife.data.fetch.manager.settings', test_settings):
-            with patch.object(FetchManager, 'fetch_source') as mock_fetch:
-                mock_fetch.return_value = FetchResult(
-                    "test", Path("test"), True)
+        with patch("exolife.data.fetch.manager.settings", test_settings):
+            with patch.object(FetchManager, "fetch_source") as mock_fetch:
+                mock_fetch.return_value = FetchResult("test", Path("test"), True)
 
                 manager = FetchManager()
                 results = manager.fetch_sources(configs)
@@ -467,7 +472,9 @@ class TestFetchManager:
                 assert len(results) == 2
                 assert all(r.success for r in results)
 
-    def test_fetch_with_cache_check(self, mock_data_source_config, test_settings, temp_dir):
+    def test_fetch_with_cache_check(
+        self, mock_data_source_config, test_settings, temp_dir
+    ):
         """Test fetching with cache checking."""
         config = mock_data_source_config.model_copy()
         config.download_url = "https://example.com/data.csv"
@@ -477,10 +484,10 @@ class TestFetchManager:
         cache_dir.mkdir(parents=True, exist_ok=True)
         cache_file = cache_dir / f"{config.id}.parquet"
 
-        sample_df = pd.DataFrame({'col': [1, 2, 3]})
+        sample_df = pd.DataFrame({"col": [1, 2, 3]})
         sample_df.to_parquet(cache_file, index=False)
 
-        with patch('exolife.data.fetch.manager.settings', test_settings):
+        with patch("exolife.data.fetch.manager.settings", test_settings):
             manager = FetchManager()
 
             # Should use cache
@@ -488,8 +495,12 @@ class TestFetchManager:
             assert result.success is True
 
             # Should bypass cache
-            with patch('exolife.data.fetch.fetchers.http_fetcher.stream_download') as mock_download:
-                with patch('exolife.data.fetch.fetchers.http_fetcher.write_generic') as mock_write:
+            with patch(
+                "exolife.data.fetch.fetchers.http_fetcher.stream_download"
+            ) as mock_download:
+                with patch(
+                    "exolife.data.fetch.fetchers.http_fetcher.write_generic"
+                ) as mock_write:
                     mock_download.return_value = b"new,data\n1,2"
                     mock_write.return_value = sample_df
 

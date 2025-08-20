@@ -2,20 +2,33 @@
 Tests for the ExoLife data utilities module.
 """
 
+from unittest.mock import patch
+
 import numpy as np
 import pandas as pd
 import pytest
 import yaml
-from io import BytesIO
-from pathlib import Path
-from unittest.mock import patch, mock_open
 
 from exolife.data.utils import (
-    hz_flux, hz_distance, hz_edges, add_hz_edges_to_df,
-    DataSource, load_data_source_config, load_config, parse_sources,
-    list_data_sources, get_data_source, timestamp, norm_name,
-    gaia_int, find_source_id, load_default_drop_columns,
-    read_interim, write_interim, write_csv_trimmed, write_generic
+    DataSource,
+    add_hz_edges_to_df,
+    find_source_id,
+    gaia_int,
+    get_data_source,
+    hz_distance,
+    hz_edges,
+    hz_flux,
+    list_data_sources,
+    load_config,
+    load_data_source_config,
+    load_default_drop_columns,
+    norm_name,
+    parse_sources,
+    read_interim,
+    timestamp,
+    write_csv_trimmed,
+    write_generic,
+    write_interim,
 )
 
 
@@ -91,8 +104,7 @@ class TestHZUtils:
     def test_add_hz_edges_to_df(self, sample_dataframe):
         """Test adding HZ edges to DataFrame."""
         df = sample_dataframe.copy()
-        result_df = add_hz_edges_to_df(
-            df, teff_col="st_teff", lum_col="st_lum")
+        result_df = add_hz_edges_to_df(df, teff_col="st_teff", lum_col="st_lum")
 
         # Check that new columns were added
         assert "hz_inner" in result_df.columns
@@ -127,7 +139,8 @@ class TestHZUtils:
         """Test HZ functions when configuration file is missing."""
         # Mock empty coefficients dictionary
         import exolife.data.utils
-        monkeypatch.setattr(exolife.data.utils, '_KOPPARAPU_COEFFS', {})
+
+        monkeypatch.setattr(exolife.data.utils, "_KOPPARAPU_COEFFS", {})
 
         with pytest.raises(KeyError):
             hz_flux(5780.0, "RunawayGreenhouse")
@@ -145,7 +158,7 @@ class TestDataSource:
             download_url="https://example.com/data.csv",
             columns_to_keep=["col1", "col2"],
             primary_keys=["col1"],
-            join_keys={"other": ["col2"]}
+            join_keys={"other": ["col2"]},
         )
 
         assert source.id == "test_source"
@@ -156,9 +169,7 @@ class TestDataSource:
     def test_data_source_defaults(self):
         """Test DataSource with default values."""
         source = DataSource(
-            id="minimal",
-            name="Minimal Source",
-            description="Minimal test source"
+            id="minimal", name="Minimal Source", description="Minimal test source"
         )
 
         assert source.download_url is None
@@ -174,7 +185,7 @@ class TestDataSourceConfig:
 
     def test_load_data_source_config(self, mock_source_configs, test_settings):
         """Test loading data source configuration."""
-        with patch('exolife.data.utils.settings', test_settings):
+        with patch("exolife.data.utils.settings", test_settings):
             config = load_data_source_config("nasa_exoplanet_archive")
 
             assert config["id"] == "nasa_exoplanet_archive"
@@ -183,13 +194,13 @@ class TestDataSourceConfig:
 
     def test_load_nonexistent_config(self, test_settings):
         """Test loading non-existent configuration."""
-        with patch('exolife.data.utils.settings', test_settings):
+        with patch("exolife.data.utils.settings", test_settings):
             with pytest.raises(FileNotFoundError):
                 load_data_source_config("nonexistent_source")
 
     def test_load_config(self, mock_source_configs, test_settings):
         """Test loading all configurations."""
-        with patch('exolife.data.utils.settings', test_settings):
+        with patch("exolife.data.utils.settings", test_settings):
             config = load_config()
 
             assert "data_sources" in config
@@ -205,13 +216,9 @@ class TestDataSourceConfig:
                     "description": "First source",
                     "download_url": "https://example.com/1.csv",
                     "columns_to_keep": ["col1", "col2"],
-                    "extra_field": "ignored"  # Should be filtered out
+                    "extra_field": "ignored",  # Should be filtered out
                 },
-                {
-                    "id": "source2",
-                    "name": "Source 2",
-                    "description": "Second source"
-                }
+                {"id": "source2", "name": "Source 2", "description": "Second source"},
             ]
         }
 
@@ -229,7 +236,7 @@ class TestDataSourceConfig:
 
     def test_list_data_sources(self, mock_source_configs, test_settings):
         """Test listing available data sources."""
-        with patch('exolife.data.utils.settings', test_settings):
+        with patch("exolife.data.utils.settings", test_settings):
             sources = list_data_sources()
 
             assert isinstance(sources, list)
@@ -238,7 +245,7 @@ class TestDataSourceConfig:
 
     def test_get_data_source(self, mock_source_configs, test_settings):
         """Test getting specific data source."""
-        with patch('exolife.data.utils.settings', test_settings):
+        with patch("exolife.data.utils.settings", test_settings):
             source = get_data_source("nasa_exoplanet_archive")
 
             assert isinstance(source, DataSource)
@@ -247,7 +254,7 @@ class TestDataSourceConfig:
 
     def test_get_nonexistent_data_source(self, mock_source_configs, test_settings):
         """Test getting non-existent data source."""
-        with patch('exolife.data.utils.settings', test_settings):
+        with patch("exolife.data.utils.settings", test_settings):
             with pytest.raises(KeyError, match="Data source 'nonexistent' not found"):
                 get_data_source("nonexistent")
 
@@ -291,7 +298,7 @@ class TestUtilityFunctions:
 
     def test_find_source_id(self, mock_source_configs, test_settings):
         """Test finding source ID by prefix."""
-        with patch('exolife.data.utils.settings', test_settings):
+        with patch("exolife.data.utils.settings", test_settings):
             # Should find the NASA source
             found = find_source_id("nasa")
             assert found == "nasa_exoplanet_archive"
@@ -313,16 +320,16 @@ class TestUtilityFunctions:
         config_dir.mkdir(parents=True, exist_ok=True)
 
         drop_file = config_dir / "drop_columns.yml"
-        with open(drop_file, 'w') as f:
+        with open(drop_file, "w") as f:
             yaml.dump(drop_config, f)
 
-        with patch('exolife.data.utils.settings', test_settings):
+        with patch("exolife.data.utils.settings", test_settings):
             columns = load_default_drop_columns()
             assert columns == ["col1", "col2", "col3"]
 
     def test_load_default_drop_columns_missing_file(self, test_settings):
         """Test loading drop columns when file is missing."""
-        with patch('exolife.data.utils.settings', test_settings):
+        with patch("exolife.data.utils.settings", test_settings):
             columns = load_default_drop_columns()
             assert columns == []  # Should return empty list
 
@@ -332,7 +339,7 @@ class TestDataFileOperations:
 
     def test_write_csv_trimmed(self, temp_dir, sample_csv_content):
         """Test writing trimmed CSV data."""
-        raw_data = sample_csv_content.encode('utf-8')
+        raw_data = sample_csv_content.encode("utf-8")
         output_path = temp_dir / "output.parquet"
         keep_cols = ["pl_name", "st_teff"]
 
@@ -349,7 +356,7 @@ class TestDataFileOperations:
 
     def test_write_csv_trimmed_no_filter(self, temp_dir, sample_csv_content):
         """Test writing CSV data without filtering."""
-        raw_data = sample_csv_content.encode('utf-8')
+        raw_data = sample_csv_content.encode("utf-8")
         output_path = temp_dir / "output.parquet"
 
         df = write_csv_trimmed(raw_data, [], output_path)
@@ -359,7 +366,7 @@ class TestDataFileOperations:
 
     def test_write_generic_csv(self, temp_dir, sample_csv_content):
         """Test write_generic with CSV URL."""
-        raw_data = sample_csv_content.encode('utf-8')
+        raw_data = sample_csv_content.encode("utf-8")
         output_path = temp_dir / "output.parquet"
         url = "https://example.com/data.csv"
 
@@ -371,17 +378,17 @@ class TestDataFileOperations:
 
     def test_write_generic_format_csv(self, temp_dir, sample_csv_content):
         """Test write_generic with format=csv in URL."""
-        raw_data = sample_csv_content.encode('utf-8')
+        raw_data = sample_csv_content.encode("utf-8")
         output_path = temp_dir / "output.parquet"
         url = "https://example.com/data?format=csv"
 
-        df = write_generic(raw_data, url, [], output_path)
+        write_generic(raw_data, url, [], output_path)
 
         assert output_path.exists()
 
     def test_read_write_interim(self, temp_dir, sample_dataframe, test_settings):
         """Test reading and writing interim data."""
-        with patch('exolife.data.utils.settings', test_settings):
+        with patch("exolife.data.utils.settings", test_settings):
             # Write data
             write_interim(sample_dataframe, "test_data", "test_stage")
 
@@ -392,13 +399,12 @@ class TestDataFileOperations:
 
     def test_read_interim_with_columns(self, temp_dir, sample_dataframe, test_settings):
         """Test reading interim data with specific columns."""
-        with patch('exolife.data.utils.settings', test_settings):
+        with patch("exolife.data.utils.settings", test_settings):
             # Write data
             write_interim(sample_dataframe, "test_data", "test_stage")
 
             # Read specific columns
-            df = read_interim("test_data", "test_stage",
-                              cols=["pl_name", "st_teff"])
+            df = read_interim("test_data", "test_stage", cols=["pl_name", "st_teff"])
 
             assert len(df.columns) == 2
             assert "pl_name" in df.columns
@@ -406,7 +412,7 @@ class TestDataFileOperations:
 
     def test_read_interim_missing_file(self, test_settings):
         """Test reading non-existent interim data."""
-        with patch('exolife.data.utils.settings', test_settings):
+        with patch("exolife.data.utils.settings", test_settings):
             with pytest.raises(FileNotFoundError):
                 read_interim("nonexistent", "test_stage")
 
@@ -428,14 +434,15 @@ class TestDataIntegration:
         # Calculate planetary positions relative to HZ
         df["pl_sma"] = 1.0  # Assume 1 AU for all planets
         df["in_hz"] = (df["pl_sma"] >= df["hz_inner"]) & (
-            df["pl_sma"] <= df["hz_outer"])
+            df["pl_sma"] <= df["hz_outer"]
+        )
 
         # Should have boolean column
         assert df["in_hz"].dtype == bool
 
     def test_data_source_workflow(self, mock_source_configs, test_settings):
         """Test complete data source configuration workflow."""
-        with patch('exolife.data.utils.settings', test_settings):
+        with patch("exolife.data.utils.settings", test_settings):
             # List available sources
             sources = list_data_sources()
             assert len(sources) > 0

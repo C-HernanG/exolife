@@ -2,12 +2,12 @@
 Tests for the ExoLife CLI module.
 """
 
-import pytest
-from unittest.mock import patch, MagicMock
-from click.testing import CliRunner
-from pathlib import Path
+from unittest.mock import MagicMock, patch
 
-from exolife.cli import main, load_commands
+import pytest
+from click.testing import CliRunner
+
+from exolife.cli import load_commands, main
 from exolife.plugins.cli.dag import cli as dag_cli
 
 
@@ -17,7 +17,7 @@ class TestCLICore:
     def test_main_cli_group_creation(self):
         """Test that main CLI group is created properly."""
         runner = CliRunner()
-        result = runner.invoke(main, ['--help'])
+        result = runner.invoke(main, ["--help"])
 
         assert result.exit_code == 0
         assert "ExoLife CLI" in result.output
@@ -25,14 +25,14 @@ class TestCLICore:
     def test_cli_with_log_level_option(self):
         """Test CLI with log level option."""
         runner = CliRunner()
-        result = runner.invoke(main, ['--log-level', 'DEBUG', '--help'])
+        result = runner.invoke(main, ["--log-level", "DEBUG", "--help"])
 
         assert result.exit_code == 0
 
     def test_cli_with_force_option(self):
         """Test CLI with force option."""
         runner = CliRunner()
-        result = runner.invoke(main, ['--force', '--help'])
+        result = runner.invoke(main, ["--force", "--help"])
 
         assert result.exit_code == 0
 
@@ -44,10 +44,10 @@ class TestCLICore:
         except Exception as e:
             pytest.fail(f"load_commands() raised an exception: {e}")
 
-    @patch('exolife.cli.logger')
+    @patch("exolife.cli.logger")
     def test_load_commands_with_plugin_error(self, mock_logger):
         """Test load_commands handles plugin loading errors gracefully."""
-        with patch('exolife.cli.importlib.import_module') as mock_import:
+        with patch("exolife.cli.importlib.import_module") as mock_import:
             mock_import.side_effect = ImportError("Test import error")
 
             # Should not raise exception
@@ -58,14 +58,14 @@ class TestCLICore:
 
     def test_context_object_creation(self):
         """Test that CLI context object is created properly."""
-        runner = CliRunner()
+        CliRunner()
 
         @main.command()
         @pytest.fixture
         def test_command(ctx):
             assert ctx.obj is not None
-            assert 'log_level' in ctx.obj
-            assert 'force' in ctx.obj
+            assert "log_level" in ctx.obj
+            assert "force" in ctx.obj
 
         # We can't easily test this without modifying the CLI structure
         # This is more of a design verification
@@ -77,7 +77,7 @@ class TestDAGCLI:
     def test_dag_cli_group(self):
         """Test DAG CLI group."""
         runner = CliRunner()
-        result = runner.invoke(dag_cli, ['--help'])
+        result = runner.invoke(dag_cli, ["--help"])
 
         assert result.exit_code == 0
         assert "DAG workflow orchestration" in result.output
@@ -85,7 +85,7 @@ class TestDAGCLI:
     def test_dag_run_help(self):
         """Test DAG run command help."""
         runner = CliRunner()
-        result = runner.invoke(dag_cli, ['run', '--help'])
+        result = runner.invoke(dag_cli, ["run", "--help"])
 
         assert result.exit_code == 0
         assert "Execute a DAG workflow" in result.output
@@ -93,7 +93,7 @@ class TestDAGCLI:
     def test_dag_validate_help(self):
         """Test DAG validate command help."""
         runner = CliRunner()
-        result = runner.invoke(dag_cli, ['validate', '--help'])
+        result = runner.invoke(dag_cli, ["validate", "--help"])
 
         assert result.exit_code == 0
         assert "Validate a DAG specification" in result.output
@@ -101,7 +101,7 @@ class TestDAGCLI:
     def test_dag_info_help(self):
         """Test DAG info command help."""
         runner = CliRunner()
-        result = runner.invoke(dag_cli, ['info', '--help'])
+        result = runner.invoke(dag_cli, ["info", "--help"])
 
         assert result.exit_code == 0
         assert "Show information about a DAG" in result.output
@@ -109,14 +109,14 @@ class TestDAGCLI:
     def test_dag_run_nonexistent_file(self):
         """Test DAG run with non-existent file."""
         runner = CliRunner()
-        result = runner.invoke(dag_cli, ['run', 'nonexistent.yaml'])
+        result = runner.invoke(dag_cli, ["run", "nonexistent.yaml"])
 
         assert result.exit_code != 0
 
     def test_dag_validate_nonexistent_file(self):
         """Test DAG validate with non-existent file."""
         runner = CliRunner()
-        result = runner.invoke(dag_cli, ['validate', 'nonexistent.yaml'])
+        result = runner.invoke(dag_cli, ["validate", "nonexistent.yaml"])
 
         assert result.exit_code != 0
 
@@ -125,13 +125,13 @@ class TestDAGCLI:
         import yaml
 
         dag_file = temp_dir / "test_dag.yaml"
-        with open(dag_file, 'w') as f:
+        with open(dag_file, "w") as f:
             yaml.dump(dag_yaml_config, f)
 
         runner = CliRunner()
 
         # Test dry run
-        result = runner.invoke(dag_cli, ['run', str(dag_file), '--dry-run'])
+        result = runner.invoke(dag_cli, ["run", str(dag_file), "--dry-run"])
 
         # Should succeed validation
         assert result.exit_code == 0
@@ -142,11 +142,11 @@ class TestDAGCLI:
         import yaml
 
         dag_file = temp_dir / "test_dag.yaml"
-        with open(dag_file, 'w') as f:
+        with open(dag_file, "w") as f:
             yaml.dump(dag_yaml_config, f)
 
         runner = CliRunner()
-        result = runner.invoke(dag_cli, ['validate', str(dag_file)])
+        result = runner.invoke(dag_cli, ["validate", str(dag_file)])
 
         assert result.exit_code == 0
         assert "DAG validation passed" in result.output
@@ -156,11 +156,11 @@ class TestDAGCLI:
         import yaml
 
         dag_file = temp_dir / "test_dag.yaml"
-        with open(dag_file, 'w') as f:
+        with open(dag_file, "w") as f:
             yaml.dump(dag_yaml_config, f)
 
         runner = CliRunner()
-        result = runner.invoke(dag_cli, ['info', str(dag_file)])
+        result = runner.invoke(dag_cli, ["info", str(dag_file)])
 
         assert result.exit_code == 0
         assert "DAG Information" in result.output
@@ -171,11 +171,11 @@ class TestDAGCLI:
         import yaml
 
         dag_file = temp_dir / "invalid_dag.yaml"
-        with open(dag_file, 'w') as f:
+        with open(dag_file, "w") as f:
             yaml.dump(invalid_dag_config, f)
 
         runner = CliRunner()
-        result = runner.invoke(dag_cli, ['run', str(dag_file), '--dry-run'])
+        result = runner.invoke(dag_cli, ["run", str(dag_file), "--dry-run"])
 
         # Should fail validation
         assert result.exit_code == 0  # Command succeeds but reports validation errors
@@ -186,18 +186,19 @@ class TestDAGCLI:
         import yaml
 
         dag_file = temp_dir / "test_dag.yaml"
-        with open(dag_file, 'w') as f:
+        with open(dag_file, "w") as f:
             yaml.dump(dag_yaml_config, f)
 
         runner = CliRunner()
 
         # Test sequential mode (default)
-        result = runner.invoke(dag_cli, ['run', str(dag_file), '--dry-run'])
+        result = runner.invoke(dag_cli, ["run", str(dag_file), "--dry-run"])
         assert result.exit_code == 0
 
         # Test parallel mode
-        result = runner.invoke(dag_cli, ['run', str(
-            dag_file), '--mode', 'parallel', '--dry-run'])
+        result = runner.invoke(
+            dag_cli, ["run", str(dag_file), "--mode", "parallel", "--dry-run"]
+        )
         assert result.exit_code == 0
 
     def test_dag_run_specific_task(self, temp_dir, dag_yaml_config):
@@ -205,25 +206,28 @@ class TestDAGCLI:
         import yaml
 
         dag_file = temp_dir / "test_dag.yaml"
-        with open(dag_file, 'w') as f:
+        with open(dag_file, "w") as f:
             yaml.dump(dag_yaml_config, f)
 
         runner = CliRunner()
-        result = runner.invoke(dag_cli, ['run', str(
-            dag_file), '--task', 'fetch_nasa', '--dry-run'])
+        result = runner.invoke(
+            dag_cli, ["run", str(dag_file), "--task", "fetch_nasa", "--dry-run"]
+        )
 
         assert result.exit_code == 0
 
-    @patch('exolife.plugins.cli.dag.DAGExecutor')
-    @patch('exolife.plugins.cli.dag.DataPipelineTaskExecutor')
-    def test_dag_run_execution_success(self, mock_task_executor, mock_dag_executor,
-                                       temp_dir, dag_yaml_config):
+    @patch("exolife.plugins.cli.dag.DAGExecutor")
+    @patch("exolife.plugins.cli.dag.DataPipelineTaskExecutor")
+    def test_dag_run_execution_success(
+        self, mock_task_executor, mock_dag_executor, temp_dir, dag_yaml_config
+    ):
         """Test successful DAG execution."""
         import yaml
-        from exolife.pipeline.dag import TaskStatus, TaskResult
+
+        from exolife.pipeline.dag import TaskResult, TaskStatus
 
         dag_file = temp_dir / "test_dag.yaml"
-        with open(dag_file, 'w') as f:
+        with open(dag_file, "w") as f:
             yaml.dump(dag_yaml_config, f)
 
         # Mock successful execution
@@ -238,21 +242,23 @@ class TestDAGCLI:
         mock_executor_instance.execute_dag.return_value = mock_results
 
         runner = CliRunner()
-        result = runner.invoke(dag_cli, ['run', str(dag_file)])
+        result = runner.invoke(dag_cli, ["run", str(dag_file)])
 
         assert result.exit_code == 0
         assert "All tasks completed successfully" in result.output
 
-    @patch('exolife.plugins.cli.dag.DAGExecutor')
-    @patch('exolife.plugins.cli.dag.DataPipelineTaskExecutor')
-    def test_dag_run_execution_failure(self, mock_task_executor, mock_dag_executor,
-                                       temp_dir, dag_yaml_config):
+    @patch("exolife.plugins.cli.dag.DAGExecutor")
+    @patch("exolife.plugins.cli.dag.DataPipelineTaskExecutor")
+    def test_dag_run_execution_failure(
+        self, mock_task_executor, mock_dag_executor, temp_dir, dag_yaml_config
+    ):
         """Test DAG execution with failures."""
         import yaml
-        from exolife.pipeline.dag import TaskStatus, TaskResult
+
+        from exolife.pipeline.dag import TaskResult, TaskStatus
 
         dag_file = temp_dir / "test_dag.yaml"
-        with open(dag_file, 'w') as f:
+        with open(dag_file, "w") as f:
             yaml.dump(dag_yaml_config, f)
 
         # Mock execution with failure
@@ -262,13 +268,15 @@ class TestDAGCLI:
         # Mock results with one failure
         mock_results = {
             "fetch_nasa": TaskResult("fetch_nasa", TaskStatus.SUCCESS),
-            "validate_data": TaskResult("validate_data", TaskStatus.FAILED, error_message="Validation failed"),
-            "export_results": TaskResult("export_results", TaskStatus.SUCCESS)
+            "validate_data": TaskResult(
+                "validate_data", TaskStatus.FAILED, error_message="Validation failed"
+            ),
+            "export_results": TaskResult("export_results", TaskStatus.SUCCESS),
         }
         mock_executor_instance.execute_dag.return_value = mock_results
 
         runner = CliRunner()
-        result = runner.invoke(dag_cli, ['run', str(dag_file)])
+        result = runner.invoke(dag_cli, ["run", str(dag_file)])
 
         assert result.exit_code == 0  # CLI doesn't exit with error code
         assert "Failed tasks:" in result.output
@@ -278,7 +286,7 @@ class TestDAGCLI:
 class TestCLIUtilities:
     """Test cases for CLI utility functions."""
 
-    @patch('exolife.plugins.cli.dag.settings')
+    @patch("exolife.plugins.cli.dag.settings")
     def test_get_dags_directory(self, mock_settings, temp_dir):
         """Test getting DAGs directory."""
         from exolife.plugins.cli.dag import get_dags_directory
@@ -289,7 +297,7 @@ class TestCLIUtilities:
         assert dags_dir == temp_dir / "dags"
         assert dags_dir.exists()
 
-    @patch('exolife.plugins.cli.dag.get_dags_directory')
+    @patch("exolife.plugins.cli.dag.get_dags_directory")
     def test_list_available_dags(self, mock_get_dags_dir, temp_dir):
         """Test listing available DAGs."""
         from exolife.plugins.cli.dag import list_available_dags
@@ -312,7 +320,7 @@ class TestCLIUtilities:
         assert "dag2" in dag_names
         assert "not_a_dag" not in dag_names
 
-    @patch('exolife.plugins.cli.dag.get_dags_directory')
+    @patch("exolife.plugins.cli.dag.get_dags_directory")
     def test_resolve_dag_file(self, mock_get_dags_dir, temp_dir):
         """Test resolving DAG file paths."""
         from exolife.plugins.cli.dag import resolve_dag_file
@@ -340,7 +348,7 @@ class TestCLIUtilities:
         resolved = resolve_dag_file("test_dag2")
         assert resolved == yml_file
 
-    @patch('exolife.plugins.cli.dag.get_dags_directory')
+    @patch("exolife.plugins.cli.dag.get_dags_directory")
     def test_resolve_dag_file_not_found(self, mock_get_dags_dir, temp_dir):
         """Test resolving non-existent DAG file."""
         from exolife.plugins.cli.dag import resolve_dag_file
@@ -372,23 +380,23 @@ class TestCLIIntegration:
         import yaml
 
         dag_file = temp_dir / "workflow_test.yaml"
-        with open(dag_file, 'w') as f:
+        with open(dag_file, "w") as f:
             yaml.dump(dag_yaml_config, f)
 
         runner = CliRunner()
 
         # Step 1: Validate
-        result = runner.invoke(dag_cli, ['validate', str(dag_file)])
+        result = runner.invoke(dag_cli, ["validate", str(dag_file)])
         assert result.exit_code == 0
         assert "DAG validation passed" in result.output
 
         # Step 2: Get info
-        result = runner.invoke(dag_cli, ['info', str(dag_file)])
+        result = runner.invoke(dag_cli, ["info", str(dag_file)])
         assert result.exit_code == 0
         assert "DAG Information" in result.output
 
         # Step 3: Dry run
-        result = runner.invoke(dag_cli, ['run', str(dag_file), '--dry-run'])
+        result = runner.invoke(dag_cli, ["run", str(dag_file), "--dry-run"])
         assert result.exit_code == 0
         assert "Dry run completed successfully" in result.output
 
@@ -397,11 +405,11 @@ class TestCLIIntegration:
         runner = CliRunner()
 
         # Test with invalid command
-        result = runner.invoke(main, ['invalid_command'])
+        result = runner.invoke(main, ["invalid_command"])
         assert result.exit_code != 0
 
         # Test DAG command with missing file
-        result = runner.invoke(dag_cli, ['run', '/nonexistent/path.yaml'])
+        result = runner.invoke(dag_cli, ["run", "/nonexistent/path.yaml"])
         assert result.exit_code != 0
 
     def test_cli_help_messages(self):
@@ -409,16 +417,16 @@ class TestCLIIntegration:
         runner = CliRunner()
 
         # Main help
-        result = runner.invoke(main, ['--help'])
+        result = runner.invoke(main, ["--help"])
         assert result.exit_code == 0
         assert "ExoLife CLI" in result.output
 
         # DAG help
-        result = runner.invoke(dag_cli, ['--help'])
+        result = runner.invoke(dag_cli, ["--help"])
         assert result.exit_code == 0
         assert "workflow orchestration" in result.output
 
         # DAG subcommand help
-        for subcommand in ['run', 'validate', 'info']:
-            result = runner.invoke(dag_cli, [subcommand, '--help'])
+        for subcommand in ["run", "validate", "info"]:
+            result = runner.invoke(dag_cli, [subcommand, "--help"])
             assert result.exit_code == 0

@@ -4,15 +4,15 @@ Fixtures and test configuration for the ExoLife test suite.
 
 import tempfile
 from pathlib import Path
-from typing import Dict, Any, List
+
 import pandas as pd
 import pytest
 import yaml
 
-from exolife.settings import Settings
-from exolife.data.utils import DataSource
 from exolife.data.fetch.fetcher_base import DataSourceConfig
+from exolife.data.utils import DataSource
 from exolife.pipeline.dag import DAG, TaskNode
+from exolife.settings import Settings
 
 
 @pytest.fixture
@@ -42,17 +42,19 @@ def test_settings(temp_dir):
 @pytest.fixture
 def sample_dataframe():
     """Create a sample DataFrame for testing."""
-    return pd.DataFrame({
-        'pl_name': ['Kepler-442 b', 'K2-18 b', 'TRAPPIST-1 e'],
-        'st_teff': [4402.0, 3457.0, 2566.0],
-        'st_lum': [-0.377, -1.255, -3.255],  # log values
-        'pl_orbper': [112.3, 32.9, 6.1],
-        'pl_rade': [1.34, 2.3, 0.92],
-        'pl_masse': [2.3, 8.6, 0.77],
-        'st_rad': [0.61, 0.41, 0.121],
-        'st_mass': [0.68, 0.45, 0.089],
-        'gaia_id': [1234567890123456, 2345678901234567, 3456789012345678]
-    })
+    return pd.DataFrame(
+        {
+            "pl_name": ["Kepler-442 b", "K2-18 b", "TRAPPIST-1 e"],
+            "st_teff": [4402.0, 3457.0, 2566.0],
+            "st_lum": [-0.377, -1.255, -3.255],  # log values
+            "pl_orbper": [112.3, 32.9, 6.1],
+            "pl_rade": [1.34, 2.3, 0.92],
+            "pl_masse": [2.3, 8.6, 0.77],
+            "st_rad": [0.61, 0.41, 0.121],
+            "st_mass": [0.68, 0.45, 0.089],
+            "gaia_id": [1234567890123456, 2345678901234567, 3456789012345678],
+        }
+    )
 
 
 @pytest.fixture
@@ -65,7 +67,7 @@ def mock_data_source():
         download_url="https://example.com/test_data.csv",
         columns_to_keep=["pl_name", "st_teff", "pl_rade"],
         primary_keys=["pl_name"],
-        join_keys={"gaia": ["gaia_id"]}
+        join_keys={"gaia": ["gaia_id"]},
     )
 
 
@@ -81,7 +83,7 @@ def mock_data_source_config():
         primary_keys=["pl_name"],
         join_keys={"gaia": ["gaia_id"]},
         format="csv",
-        timeout=30
+        timeout=30,
     )
 
 
@@ -95,21 +97,21 @@ def sample_dag():
         task_id="fetch_data",
         task_type="fetch",
         config={"source": "test_source"},
-        dependencies=[]
+        dependencies=[],
     )
 
     task2 = TaskNode(
         task_id="process_data",
         task_type="preprocess",
         config={"operation": "clean"},
-        dependencies=["fetch_data"]
+        dependencies=["fetch_data"],
     )
 
     task3 = TaskNode(
         task_id="merge_data",
         task_type="merge",
         config={"strategy": "baseline"},
-        dependencies=["process_data"]
+        dependencies=["process_data"],
     )
 
     dag.add_task(task1)
@@ -131,23 +133,23 @@ def dag_yaml_config():
                 "config": {"source": "nasa_exoplanet_archive"},
                 "dependencies": [],
                 "retries": 2,
-                "timeout": 300
+                "timeout": 300,
             },
             "validate_data": {
                 "task_type": "validate",
                 "config": {"check_completeness": True},
                 "dependencies": ["fetch_nasa"],
                 "retries": 1,
-                "timeout": 120
+                "timeout": 120,
             },
             "export_results": {
                 "task_type": "export",
                 "config": {"format": "parquet"},
                 "dependencies": ["validate_data"],
                 "retries": 1,
-                "timeout": 60
-            }
-        }
+                "timeout": 60,
+            },
+        },
     }
 
 
@@ -158,14 +160,14 @@ def mock_hz_config(temp_dir):
         "RecentVenus": [1.766, 2.136e-4, 2.533e-8, -1.332e-11, -3.097e-15],
         "RunawayGreenhouse": [1.107, 1.332e-4, 1.580e-8, -8.308e-12, -1.931e-15],
         "MaximumGreenhouse": [0.356, 6.171e-5, 1.698e-9, -2.442e-12, -8.023e-16],
-        "EarlyMars": [0.320, 5.547e-5, 1.526e-9, -2.874e-12, -5.011e-16]
+        "EarlyMars": [0.320, 5.547e-5, 1.526e-9, -2.874e-12, -5.011e-16],
     }
 
     config_dir = temp_dir / "config" / "constants"
     config_dir.mkdir(parents=True, exist_ok=True)
 
     hz_file = config_dir / "hz.yml"
-    with open(hz_file, 'w') as f:
+    with open(hz_file, "w") as f:
         yaml.dump(hz_config, f)
 
     return hz_file
@@ -185,10 +187,10 @@ def mock_source_configs(temp_dir):
         "download_url": "https://exoplanetarchive.ipac.caltech.edu/cgi-bin/nstedAPI/nph-nstedAPI",
         "columns_to_keep": ["pl_name", "st_teff", "pl_rade"],
         "primary_keys": ["pl_name"],
-        "format": "csv"
+        "format": "csv",
     }
 
-    with open(sources_dir / "nasa_exoplanet_archive.yml", 'w') as f:
+    with open(sources_dir / "nasa_exoplanet_archive.yml", "w") as f:
         yaml.dump(nasa_config, f)
 
     # GAIA source config
@@ -200,10 +202,10 @@ def mock_source_configs(temp_dir):
         "adql": "SELECT source_id, teff_gspphot FROM gaiadr3.astrophysical_parameters WHERE source_id IN (<GAIA_ID_LIST>)",
         "columns_to_keep": ["source_id", "teff_gspphot"],
         "primary_keys": ["source_id"],
-        "format": "csv"
+        "format": "csv",
     }
 
-    with open(sources_dir / "gaia_dr3_astrophysical_parameters.yml", 'w') as f:
+    with open(sources_dir / "gaia_dr3_astrophysical_parameters.yml", "w") as f:
         yaml.dump(gaia_config, f)
 
     return sources_dir
@@ -227,15 +229,9 @@ def invalid_dag_config():
         "tasks": {
             "task_with_missing_dep": {
                 "task_type": "fetch",
-                "dependencies": ["nonexistent_task"]
+                "dependencies": ["nonexistent_task"],
             },
-            "task1": {
-                "task_type": "process",
-                "dependencies": ["task2"]
-            },
-            "task2": {
-                "task_type": "merge",
-                "dependencies": ["task1"]  # Creates cycle
-            }
-        }
+            "task1": {"task_type": "process", "dependencies": ["task2"]},
+            "task2": {"task_type": "merge", "dependencies": ["task1"]},  # Creates cycle
+        },
     }

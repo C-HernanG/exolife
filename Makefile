@@ -124,15 +124,15 @@ lint: lint-check ## Alias for lint-check
 
 lint-check: ## Check code style and quality
 	@printf "$(BLUE)Checking code style with ruff...$(NC)\n"
-	ruff check --diff $(PACKAGE_DIR)
+	ruff check --diff .
 	@printf "$(BLUE)Checking code formatting with black...$(NC)\n"
-	black --check --diff $(PACKAGE_DIR)
+	black --check --diff .
 
 format: ## Format code with black and ruff
 	@printf "$(BLUE)Formatting code with ruff...$(NC)\n"
-	ruff check --fix --unsafe-fixes $(PACKAGE_DIR)
+	ruff check --fix --unsafe-fixes .
 	@printf "$(BLUE)Formatting code with black...$(NC)\n"
-	black $(PACKAGE_DIR)
+	black .
 	@printf "$(GREEN)✓ Code formatted$(NC)\n"
 
 format-check: lint-check ## Alias for lint-check

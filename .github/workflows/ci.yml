@@ -39,5 +39,5 @@ jobs:
         shell: bash -l {0}
         run: |
           conda activate exolife
-          black --check --diff .
-          ruff check .
+          black --check --diff package
+          ruff check package

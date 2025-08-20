@@ -2,12 +2,13 @@
 Tests for the ExoLife pipeline executor module.
 """
 
-import pytest
-from unittest.mock import Mock, patch, MagicMock
-from pathlib import Path
 import time
+from pathlib import Path
+from unittest.mock import Mock, patch
 
-from exolife.pipeline.dag import DAG, TaskNode, TaskStatus, TaskResult
+import pytest
+
+from exolife.pipeline.dag import DAG, TaskNode, TaskResult, TaskStatus
 from exolife.pipeline.executor import DAGExecutor, DataPipelineTaskExecutor
 
 
@@ -31,14 +32,14 @@ class MockTaskExecutor:
                 task_id=task_node.task_id,
                 status=TaskStatus.FAILED,
                 error_message="Mock task failure",
-                execution_time=self.execution_time
+                execution_time=self.execution_time,
             )
 
         return TaskResult(
             task_id=task_node.task_id,
             status=TaskStatus.SUCCESS,
             output={"mock": "data"},
-            execution_time=self.execution_time
+            execution_time=self.execution_time,
         )
 
 
@@ -67,7 +68,7 @@ class TestDAGExecutor:
         task_executor = MockTaskExecutor()
         executor = DAGExecutor(task_executor)
 
-        task_node = sample_dag.nodes["fetch_data"]
+        sample_dag.nodes["fetch_data"]
         result = executor.execute_task(sample_dag, "fetch_data")
 
         assert result.status == TaskStatus.SUCCESS
@@ -97,13 +98,10 @@ class TestDAGExecutor:
                 return TaskResult(
                     task_id=task_node.task_id,
                     status=TaskStatus.FAILED,
-                    error_message="First attempt failed"
+                    error_message="First attempt failed",
                 )
             else:
-                return TaskResult(
-                    task_id=task_node.task_id,
-                    status=TaskStatus.SUCCESS
-                )
+                return TaskResult(task_id=task_node.task_id, status=TaskStatus.SUCCESS)
 
         task_executor = Mock()
         task_executor.execute_task = mock_execute
@@ -121,11 +119,12 @@ class TestDAGExecutor:
 
     def test_execute_task_max_retries_exceeded(self, sample_dag):
         """Test task execution when max retries are exceeded."""
+
         def mock_execute(task_node, dag_context=None):
             return TaskResult(
                 task_id=task_node.task_id,
                 status=TaskStatus.FAILED,
-                error_message="Always fails"
+                error_message="Always fails",
             )
 
         task_executor = Mock()
@@ -163,9 +162,8 @@ class TestDAGExecutor:
         # Create tasks where middle task fails
         tasks = [
             TaskNode("task1", "fetch", on_failure="fail"),
-            TaskNode("task2", "process", dependencies=[
-                     "task1"], on_failure="fail"),
-            TaskNode("task3", "merge", dependencies=["task2"])
+            TaskNode("task2", "process", dependencies=["task1"], on_failure="fail"),
+            TaskNode("task3", "merge", dependencies=["task2"]),
         ]
 
         for task in tasks:
@@ -174,7 +172,9 @@ class TestDAGExecutor:
         # Mock executor that fails on task2
         def mock_execute(task_node, dag_context=None):
             if task_node.task_id == "task2":
-                return TaskResult(task_node.task_id, TaskStatus.FAILED, error_message="Mock failure")
+                return TaskResult(
+                    task_node.task_id, TaskStatus.FAILED, error_message="Mock failure"
+                )
             return TaskResult(task_node.task_id, TaskStatus.SUCCESS)
 
         task_executor = Mock()
@@ -197,9 +197,8 @@ class TestDAGExecutor:
 
         tasks = [
             TaskNode("task1", "fetch"),
-            TaskNode("task2", "process", dependencies=[
-                     "task1"], on_failure="continue"),
-            TaskNode("task3", "merge", dependencies=["task2"])
+            TaskNode("task2", "process", dependencies=["task1"], on_failure="continue"),
+            TaskNode("task3", "merge", dependencies=["task2"]),
         ]
 
         for task in tasks:
@@ -208,7 +207,9 @@ class TestDAGExecutor:
         # Mock executor that fails on task2
         def mock_execute(task_node, dag_context=None):
             if task_node.task_id == "task2":
-                return TaskResult(task_node.task_id, TaskStatus.FAILED, error_message="Mock failure")
+                return TaskResult(
+                    task_node.task_id, TaskStatus.FAILED, error_message="Mock failure"
+                )
             return TaskResult(task_node.task_id, TaskStatus.SUCCESS)
 
         task_executor = Mock()
@@ -274,7 +275,7 @@ class TestDAGExecutor:
         tasks = [
             TaskNode("A", "fetch"),
             TaskNode("B", "process", dependencies=["A"]),
-            TaskNode("C", "merge", dependencies=["A", "B"])
+            TaskNode("C", "merge", dependencies=["A", "B"]),
         ]
 
         for task in tasks:
@@ -286,32 +287,23 @@ class TestDAGExecutor:
         completed = {}
 
         # Initially, only A should be ready
-        assert executor._check_dependencies_met(
-            dag.nodes["A"], completed) is True
-        assert executor._check_dependencies_met(
-            dag.nodes["B"], completed) is False
-        assert executor._check_dependencies_met(
-            dag.nodes["C"], completed) is False
+        assert executor._check_dependencies_met(dag.nodes["A"], completed) is True
+        assert executor._check_dependencies_met(dag.nodes["B"], completed) is False
+        assert executor._check_dependencies_met(dag.nodes["C"], completed) is False
 
         # After A completes
         completed["A"] = TaskResult("A", TaskStatus.SUCCESS)
-        assert executor._check_dependencies_met(
-            dag.nodes["B"], completed) is True
-        assert executor._check_dependencies_met(
-            dag.nodes["C"], completed) is False
+        assert executor._check_dependencies_met(dag.nodes["B"], completed) is True
+        assert executor._check_dependencies_met(dag.nodes["C"], completed) is False
 
         # After B completes
         completed["B"] = TaskResult("B", TaskStatus.SUCCESS)
-        assert executor._check_dependencies_met(
-            dag.nodes["C"], completed) is True
+        assert executor._check_dependencies_met(dag.nodes["C"], completed) is True
 
     def test_check_dependencies_met_with_failure(self):
         """Test dependency checking when dependency failed."""
         dag = DAG("test", "Test")
-        tasks = [
-            TaskNode("A", "fetch"),
-            TaskNode("B", "process", dependencies=["A"])
-        ]
+        tasks = [TaskNode("A", "fetch"), TaskNode("B", "process", dependencies=["A"])]
 
         for task in tasks:
             dag.add_task(task)
@@ -323,8 +315,7 @@ class TestDAGExecutor:
         completed = {"A": TaskResult("A", TaskStatus.FAILED)}
 
         # B should not be ready due to failed dependency
-        assert executor._check_dependencies_met(
-            dag.nodes["B"], completed) is False
+        assert executor._check_dependencies_met(dag.nodes["B"], completed) is False
 
 
 class TestDataPipelineTaskExecutor:
@@ -333,9 +324,9 @@ class TestDataPipelineTaskExecutor:
     def test_data_pipeline_task_executor_creation(self):
         """Test DataPipelineTaskExecutor creation."""
         executor = DataPipelineTaskExecutor()
-        assert hasattr(executor, 'execute_task')
+        assert hasattr(executor, "execute_task")
 
-    @patch('exolife.pipeline.executor.FetchManager')
+    @patch("exolife.pipeline.executor.FetchManager")
     def test_execute_fetch_task(self, mock_fetch_manager_class):
         """Test executing a fetch task."""
         # Setup mock
@@ -343,15 +334,15 @@ class TestDataPipelineTaskExecutor:
         mock_fetch_manager_class.return_value = mock_manager
 
         from exolife.data.fetch.fetcher_base import FetchResult
-        mock_result = FetchResult("test_source", Path(
-            "test.parquet"), True, rows_fetched=100)
+
+        mock_result = FetchResult(
+            "test_source", Path("test.parquet"), True, rows_fetched=100
+        )
         mock_manager.fetch_source_by_id.return_value = mock_result
 
         # Create task
         task = TaskNode(
-            task_id="fetch_test",
-            task_type="fetch",
-            config={"source": "test_source"}
+            task_id="fetch_test", task_type="fetch", config={"source": "test_source"}
         )
 
         executor = DataPipelineTaskExecutor()
@@ -363,11 +354,7 @@ class TestDataPipelineTaskExecutor:
 
     def test_execute_unknown_task_type(self):
         """Test executing task with unknown type."""
-        task = TaskNode(
-            task_id="unknown_task",
-            task_type="unknown_type",
-            config={}
-        )
+        task = TaskNode(task_id="unknown_task", task_type="unknown_type", config={})
 
         executor = DataPipelineTaskExecutor()
         result = executor.execute_task(task)
@@ -375,19 +362,16 @@ class TestDataPipelineTaskExecutor:
         assert result.status == TaskStatus.FAILED
         assert "Unknown task type" in result.error_message
 
-    @patch('exolife.pipeline.executor.FetchManager')
+    @patch("exolife.pipeline.executor.FetchManager")
     def test_execute_fetch_task_with_error(self, mock_fetch_manager_class):
         """Test executing fetch task that raises exception."""
         # Setup mock to raise exception
         mock_manager = Mock()
         mock_fetch_manager_class.return_value = mock_manager
-        mock_manager.fetch_source_by_id.side_effect = Exception(
-            "Network error")
+        mock_manager.fetch_source_by_id.side_effect = Exception("Network error")
 
         task = TaskNode(
-            task_id="fetch_error",
-            task_type="fetch",
-            config={"source": "error_source"}
+            task_id="fetch_error", task_type="fetch", config={"source": "error_source"}
         )
 
         executor = DataPipelineTaskExecutor()
@@ -401,7 +385,7 @@ class TestDataPipelineTaskExecutor:
         task = TaskNode(
             task_id="validate_test",
             task_type="validate",
-            config={"check_completeness": True}
+            config={"check_completeness": True},
         )
 
         executor = DataPipelineTaskExecutor()
@@ -417,7 +401,7 @@ class TestDataPipelineTaskExecutor:
         task = TaskNode(
             task_id="export_test",
             task_type="export",
-            config={"format": "parquet", "output_path": "test_output"}
+            config={"format": "parquet", "output_path": "test_output"},
         )
 
         executor = DataPipelineTaskExecutor()
@@ -440,7 +424,7 @@ class TestExecutorIntegration:
         tasks = [
             TaskNode("fetch", "fetch", config={"source": "test"}),
             TaskNode("validate", "validate", dependencies=["fetch"]),
-            TaskNode("export", "export", dependencies=["validate"])
+            TaskNode("export", "export", dependencies=["validate"]),
         ]
 
         for task in tasks:
@@ -467,9 +451,13 @@ class TestExecutorIntegration:
 
         tasks = [
             TaskNode("success_task", "fetch"),
-            TaskNode("failing_task", "process", dependencies=[
-                     "success_task"], on_failure="continue"),
-            TaskNode("final_task", "export", dependencies=["failing_task"])
+            TaskNode(
+                "failing_task",
+                "process",
+                dependencies=["success_task"],
+                on_failure="continue",
+            ),
+            TaskNode("final_task", "export", dependencies=["failing_task"]),
         ]
 
         for task in tasks:
@@ -488,7 +476,7 @@ class TestExecutorIntegration:
         # Due to on_failure="continue"
         assert results["final_task"].status == TaskStatus.SUCCESS
 
-    @patch('exolife.pipeline.executor.FetchManager')
+    @patch("exolife.pipeline.executor.FetchManager")
     def test_real_task_executor_integration(self, mock_fetch_manager_class):
         """Test integration with real DataPipelineTaskExecutor."""
         # Setup mock fetch manager
@@ -496,6 +484,7 @@ class TestExecutorIntegration:
         mock_fetch_manager_class.return_value = mock_manager
 
         from exolife.data.fetch.fetcher_base import FetchResult
+
         mock_result = FetchResult("test_source", Path("test.parquet"), True)
         mock_manager.fetch_source_by_id.return_value = mock_result
 
@@ -536,14 +525,13 @@ class TestExecutorIntegration:
         dag.add_task(final_task)
 
         # Test both execution modes
-        task_executor = MockTaskExecutor(
-            execution_time=0.001)  # Very fast tasks
+        task_executor = MockTaskExecutor(execution_time=0.001)  # Very fast tasks
         executor = DAGExecutor(task_executor)
 
         # Sequential execution
         start_time = time.time()
         results_seq = executor.execute_dag(dag, mode="sequential")
-        seq_time = time.time() - start_time
+        time.time() - start_time
 
         # Reset executed tasks
         task_executor.executed_tasks = []
@@ -551,7 +539,7 @@ class TestExecutorIntegration:
         # Parallel execution
         start_time = time.time()
         results_par = executor.execute_dag(dag, mode="parallel")
-        par_time = time.time() - start_time
+        time.time() - start_time
 
         # Both should succeed
         assert len(results_seq) == 11
