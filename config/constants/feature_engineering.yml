@@ -1,6 +1,4 @@
-# Feature Engineering Configuration
-# Defines derived metrics to be computed during preprocessing
-
+# Derived metrics to be computed during preprocessing
 derived_planet_metrics:
   - gravity_ms2_from_mass_radius
   - density_from_mass_radius

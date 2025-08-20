@@ -1,0 +1,1391 @@
+================================================================================
+EXOLIFE PROCESSED DATA ANALYSIS REPORT
+================================================================================
+Generated on: 2025-08-20 21:22:10
+Total files analyzed: 8
+
+EXECUTIVE SUMMARY
+----------------------------------------
+• Total disk space used: 61.88 MB
+• Total records across all files: 11,676,988
+• Total columns across all files: 453
+• Successfully analyzed files: 7
+• Failed analyses: 1
+
+DETAILED FILE ANALYSIS
+----------------------------------------
+
+📊 EXOLIFE_CATALOG.PARQUET
+   ==================================================
+   File size: 5.18 MB
+   Dimensions: 5,983 rows × 339 columns
+   Memory usage: 26.66 MB
+   Duplicated rows: 0
+
+   COLUMNS:
+    1. pl_name
+       Type: object | Unique: 5,983 | Nulls: 0 (0.0%)
+    2. pl_letter
+       Type: object | Unique: 8 | Nulls: 0 (0.0%)
+    3. hostname
+       Type: object | Unique: 4,475 | Nulls: 0 (0.0%)
+    4. disc_year
+       Type: int64 | Unique: 33 | Nulls: 0 (0.0%)
+    5. disc_method
+       Type: object | Unique: 11 | Nulls: 0 (0.0%)
+    6. ra
+       Type: float64 | Unique: 4,472 | Nulls: 0 (0.0%)
+    7. dec
+       Type: float64 | Unique: 4,472 | Nulls: 0 (0.0%)
+    8. pl_orbper
+       Type: float64 | Unique: 5,669 | Nulls: 301 (5.0%)
+    9. pl_orbpererr1
+       Type: float64 | Unique: 2,646 | Nulls: 794 (13.3%)
+   10. pl_orbpererr2
+       Type: float64 | Unique: 2,644 | Nulls: 794 (13.3%)
+   11. pl_orbsmax
+       Type: float64 | Unique: 3,459 | Nulls: 296 (5.0%)
+   12. pl_orbsmaxerr1
+       Type: float64 | Unique: 753 | Nulls: 2,240 (37.4%)
+   13. pl_orbsmaxerr2
+       Type: float64 | Unique: 745 | Nulls: 2,240 (37.4%)
+   14. pl_orbincl
+       Type: float64 | Unique: 1,333 | Nulls: 1,486 (24.8%)
+   15. pl_orbinclerr1
+       Type: float64 | Unique: 577 | Nulls: 4,048 (67.7%)
+   16. pl_orbinclerr2
+       Type: float64 | Unique: 564 | Nulls: 4,046 (67.6%)
+   17. pl_orbeccen
+       Type: float64 | Unique: 579 | Nulls: 871 (14.6%)
+   18. pl_orbeccenerr1
+       Type: float64 | Unique: 301 | Nulls: 4,198 (70.2%)
+   19. pl_orbeccenerr2
+       Type: float64 | Unique: 288 | Nulls: 4,198 (70.2%)
+   20. pl_eqt
+       Type: float64 | Unique: 1,854 | Nulls: 1,524 (25.5%)
+   21. pl_eqterr1
+       Type: float64 | Unique: 323 | Nulls: 4,306 (72.0%)
+   22. pl_eqterr2
+       Type: float64 | Unique: 315 | Nulls: 4,306 (72.0%)
+   23. pl_insol
+       Type: float64 | Unique: 3,980 | Nulls: 1,798 (30.1%)
+   24. pl_insolerr1
+       Type: float64 | Unique: 2,691 | Nulls: 2,443 (40.8%)
+   25. pl_insolerr2
+       Type: float64 | Unique: 2,657 | Nulls: 2,443 (40.8%)
+   26. pl_dens
+       Type: float64 | Unique: 1,446 | Nulls: 106 (1.8%)
+   27. pl_denserr1
+       Type: float64 | Unique: 401 | Nulls: 4,657 (77.8%)
+   28. sy_gmag
+       Type: float64 | Unique: 2,152 | Nulls: 2,507 (41.9%)
+   29. sy_tmag
+       Type: float64 | Unique: 4,117 | Nulls: 264 (4.4%)
+   30. pl_denserr2
+       Type: float64 | Unique: 369 | Nulls: 4,657 (77.8%)
+   31. pl_radj
+       Type: float64 | Unique: 2,458 | Nulls: 22 (0.4%)
+   32. pl_radjerr1
+       Type: float64 | Unique: 795 | Nulls: 1,853 (31.0%)
+   33. pl_radjerr2
+       Type: float64 | Unique: 719 | Nulls: 1,853 (31.0%)
+   34. pl_rade
+       Type: float64 | Unique: 2,099 | Nulls: 22 (0.4%)
+   35. pl_radeerr1
+       Type: float64 | Unique: 784 | Nulls: 1,853 (31.0%)
+   36. pl_radeerr2
+       Type: float64 | Unique: 735 | Nulls: 1,853 (31.0%)
+   37. pl_pubdate
+       Type: float64 | Unique: 0 | Nulls: 5,983 (100.0%)
+   38. pl_massj
+       Type: float64 | Unique: 1,535 | Nulls: 3,796 (63.5%)
+   39. pl_massjerr1
+       Type: float64 | Unique: 796 | Nulls: 4,004 (66.9%)
+   40. pl_massjerr2
+       Type: float64 | Unique: 743 | Nulls: 4,004 (66.9%)
+   41. pl_masse
+       Type: float64 | Unique: 1,713 | Nulls: 3,796 (63.5%)
+   42. pl_masseerr1
+       Type: float64 | Unique: 986 | Nulls: 4,004 (66.9%)
+   43. pl_masseerr2
+       Type: float64 | Unique: 938 | Nulls: 4,004 (66.9%)
+   44. st_teff
+       Type: float64 | Unique: 2,266 | Nulls: 264 (4.4%)
+   45. st_tefferr1
+       Type: float64 | Unique: 1,523 | Nulls: 468 (7.8%)
+   46. st_tefferr2
+       Type: float64 | Unique: 1,549 | Nulls: 468 (7.8%)
+   47. st_met
+       Type: float64 | Unique: 611 | Nulls: 521 (8.7%)
+   48. st_meterr1
+       Type: float64 | Unique: 299 | Nulls: 824 (13.8%)
+   49. st_meterr2
+       Type: float64 | Unique: 332 | Nulls: 824 (13.8%)
+   50. st_lum
+       Type: float64 | Unique: 4,010 | Nulls: 280 (4.7%)
+   51. st_lumerr1
+       Type: float64 | Unique: 1,913 | Nulls: 2,442 (40.8%)
+   52. st_lumerr2
+       Type: float64 | Unique: 1,946 | Nulls: 2,448 (40.9%)
+   53. st_logg
+       Type: float64 | Unique: 1,237 | Nulls: 291 (4.9%)
+   54. st_loggerr1
+       Type: float64 | Unique: 499 | Nulls: 475 (7.9%)
+   55. st_loggerr2
+       Type: float64 | Unique: 559 | Nulls: 475 (7.9%)
+   56. st_age
+       Type: float64 | Unique: 642 | Nulls: 1,267 (21.2%)
+   57. st_ageerr1
+       Type: float64 | Unique: 748 | Nulls: 1,524 (25.5%)
+   58. st_ageerr2
+       Type: float64 | Unique: 586 | Nulls: 1,524 (25.5%)
+   59. st_mass
+       Type: float64 | Unique: 1,188 | Nulls: 7 (0.1%)
+   60. st_masserr1
+       Type: float64 | Unique: 547 | Nulls: 280 (4.7%)
+   61. st_masserr2
+       Type: float64 | Unique: 501 | Nulls: 281 (4.7%)
+   62. st_dens
+       Type: float64 | Unique: 3,229 | Nulls: 551 (9.2%)
+   63. st_denserr1
+       Type: float64 | Unique: 2,598 | Nulls: 680 (11.4%)
+   64. st_denserr2
+       Type: float64 | Unique: 2,594 | Nulls: 680 (11.4%)
+   65. st_rad
+       Type: float64 | Unique: 1,771 | Nulls: 286 (4.8%)
+   66. st_raderr1
+       Type: float64 | Unique: 989 | Nulls: 447 (7.5%)
+   67. st_raderr2
+       Type: float64 | Unique: 893 | Nulls: 448 (7.5%)
+   68. systemid
+       Type: float64 | Unique: 4,461 | Nulls: 0 (0.0%)
+   69. ttv_flag
+       Type: int64 | Unique: 2 | Nulls: 0 (0.0%)
+   70. tran_flag
+       Type: int64 | Unique: 2 | Nulls: 0 (0.0%)
+   71. rv_flag
+       Type: int64 | Unique: 2 | Nulls: 0 (0.0%)
+   72. ast_flag
+       Type: int64 | Unique: 2 | Nulls: 0 (0.0%)
+   73. ima_flag
+       Type: int64 | Unique: 2 | Nulls: 0 (0.0%)
+   74. sy_snum
+       Type: int64 | Unique: 4 | Nulls: 0 (0.0%)
+   75. sy_pnum
+       Type: int64 | Unique: 8 | Nulls: 0 (0.0%)
+   76. sy_dist
+       Type: float64 | Unique: 4,373 | Nulls: 26 (0.4%)
+   77. sy_kmag
+       Type: float64 | Unique: 3,344 | Nulls: 257 (4.3%)
+   78. gaia_id
+       Type: object | Unique: 4,179 | Nulls: 315 (5.3%)
+   79. record_id
+       Type: object | Unique: 5,983 | Nulls: 0 (0.0%)
+   80. gaia_dr3_astrophysical_parameters_gaia_dr2_source_id
+       Type: float64 | Unique: 3,978 | Nulls: 579 (9.7%)
+   81. gaia_dr3_astrophysical_parameters_gaia_dr3_source_id
+       Type: float64 | Unique: 3,978 | Nulls: 579 (9.7%)
+   82. gaia_dr3_astrophysical_parameters_ra
+       Type: float64 | Unique: 3,978 | Nulls: 579 (9.7%)
+   83. gaia_dr3_astrophysical_parameters_dec
+       Type: float64 | Unique: 3,978 | Nulls: 579 (9.7%)
+   84. gaia_dr3_astrophysical_parameters_parallax
+       Type: float64 | Unique: 3,978 | Nulls: 579 (9.7%)
+   85. gaia_dr3_astrophysical_parameters_parallax_error
+       Type: float64 | Unique: 3,977 | Nulls: 579 (9.7%)
+   86. gaia_dr3_astrophysical_parameters_pmra
+       Type: float64 | Unique: 3,978 | Nulls: 579 (9.7%)
+   87. gaia_dr3_astrophysical_parameters_pmra_error
+       Type: float64 | Unique: 3,976 | Nulls: 579 (9.7%)
+   88. gaia_dr3_astrophysical_parameters_pmdec
+       Type: float64 | Unique: 3,978 | Nulls: 579 (9.7%)
+   89. gaia_dr3_astrophysical_parameters_pmdec_error
+       Type: float64 | Unique: 3,978 | Nulls: 579 (9.7%)
+   90. gaia_dr3_astrophysical_parameters_ruwe
+       Type: float64 | Unique: 3,973 | Nulls: 579 (9.7%)
+   91. gaia_dr3_astrophysical_parameters_phot_g_mean_mag
+       Type: float64 | Unique: 3,978 | Nulls: 579 (9.7%)
+   92. gaia_dr3_astrophysical_parameters_phot_bp_mean_mag
+       Type: float64 | Unique: 3,977 | Nulls: 581 (9.7%)
+   93. gaia_dr3_astrophysical_parameters_phot_rp_mean_mag
+       Type: float64 | Unique: 3,976 | Nulls: 581 (9.7%)
+   94. gaia_dr3_astrophysical_parameters_bp_rp
+       Type: float64 | Unique: 3,972 | Nulls: 581 (9.7%)
+   95. gaia_dr3_astrophysical_parameters_radial_velocity
+       Type: float64 | Unique: 3,007 | Nulls: 1,868 (31.2%)
+   96. gaia_dr3_astrophysical_parameters_radial_velocity_error
+       Type: float64 | Unique: 3,007 | Nulls: 1,868 (31.2%)
+   97. gaia_dr3_astrophysical_parameters_teff_gspphot
+       Type: float64 | Unique: 3,552 | Nulls: 1,165 (19.5%)
+   98. gaia_dr3_astrophysical_parameters_logg_gspphot
+       Type: float64 | Unique: 2,860 | Nulls: 1,165 (19.5%)
+   99. gaia_dr3_astrophysical_parameters_mh_gspphot
+       Type: float64 | Unique: 3,027 | Nulls: 1,165 (19.5%)
+   100. gaia_dr3_astrophysical_parameters_distance_gspphot
+       Type: float64 | Unique: 3,563 | Nulls: 1,165 (19.5%)
+   101. gaia_dr3_astrophysical_parameters_ag_gspphot
+       Type: float64 | Unique: 1,880 | Nulls: 1,165 (19.5%)
+   102. gaia_dr3_astrophysical_parameters_ebpminrp_gspphot
+       Type: float64 | Unique: 1,452 | Nulls: 1,165 (19.5%)
+   103. gaia_dr3_astrophysical_parameters_data_source
+       Type: object | Unique: 1 | Nulls: 579 (9.7%)
+   104. gaia_dr3_astrophysical_parameters_crossmatch_method
+       Type: object | Unique: 1 | Nulls: 579 (9.7%)
+   105. gaia_dr3_astrophysical_parameters_crossmatch_quality
+       Type: float64 | Unique: 1 | Nulls: 579 (9.7%)
+   106. gaia_dr3_astrophysical_parameters_parallax_corrected
+       Type: float64 | Unique: 3,978 | Nulls: 579 (9.7%)
+   107. gaia_dr3_astrophysical_parameters_parallax_correction_applied
+       Type: object | Unique: 1 | Nulls: 579 (9.7%)
+   108. gaia_dr3_astrophysical_parameters_overall_quality_score
+       Type: float64 | Unique: 3,970 | Nulls: 579 (9.7%)
+   109. sweet_cat_Name
+       Type: object | Unique: 3,838 | Nulls: 743 (12.4%)
+   110. sweet_cat_Teff
+       Type: float64 | Unique: 2,000 | Nulls: 750 (12.5%)
+   111. sweet_cat_eTeff
+       Type: float64 | Unique: 279 | Nulls: 792 (13.2%)
+   112. sweet_cat_Logg
+       Type: float64 | Unique: 405 | Nulls: 1,064 (17.8%)
+   113. sweet_cat_eLogg
+       Type: float64 | Unique: 162 | Nulls: 1,141 (19.1%)
+   114. sweet_cat_Vt
+       Type: float64 | Unique: 372 | Nulls: 4,482 (74.9%)
+   115. sweet_cat_[Fe/H]
+       Type: float64 | Unique: 291 | Nulls: 929 (15.5%)
+   116. sweet_cat_e[Fe/H]
+       Type: float64 | Unique: 95 | Nulls: 948 (15.8%)
+   117. sweet_cat_Reference
+       Type: object | Unique: 437 | Nulls: 743 (12.4%)
+   118. sweet_cat_Update
+       Type: object | Unique: 72 | Nulls: 743 (12.4%)
+   119. sweet_cat_gaia_dr3
+       Type: float64 | Unique: 3,797 | Nulls: 743 (12.4%)
+   120. sweet_cat_Mass_t
+       Type: float64 | Unique: 3,767 | Nulls: 747 (12.5%)
+   121. sweet_cat_eMass_t
+       Type: float64 | Unique: 3,766 | Nulls: 748 (12.5%)
+   122. sweet_cat_Radius_t
+       Type: float64 | Unique: 3,750 | Nulls: 795 (13.3%)
+   123. sweet_cat_eRadius_t
+       Type: float64 | Unique: 3,750 | Nulls: 795 (13.3%)
+   124. phl_exoplanet_catalog_P_NAME
+       Type: object | Unique: 5,190 | Nulls: 793 (13.2%)
+   125. phl_exoplanet_catalog_P_UPDATED
+       Type: object | Unique: 256 | Nulls: 793 (13.2%)
+   126. phl_exoplanet_catalog_S_NAME
+       Type: object | Unique: 3,881 | Nulls: 793 (13.2%)
+   127. phl_exoplanet_catalog_S_TYPE
+       Type: object | Unique: 264 | Nulls: 4,143 (69.2%)
+   128. phl_exoplanet_catalog_P_TEMP_SURF
+       Type: float64 | Unique: 2,326 | Nulls: 3,656 (61.1%)
+   129. phl_exoplanet_catalog_P_TEMP_SURF_MIN
+       Type: float64 | Unique: 5,019 | Nulls: 960 (16.1%)
+   130. phl_exoplanet_catalog_P_TEMP_SURF_MAX
+       Type: float64 | Unique: 5,019 | Nulls: 960 (16.1%)
+   131. phl_exoplanet_catalog_P_TYPE
+       Type: object | Unique: 6 | Nulls: 802 (13.4%)
+   132. phl_exoplanet_catalog_S_HZ_OPT_MIN
+       Type: float64 | Unique: 3,955 | Nulls: 959 (16.0%)
+   133. phl_exoplanet_catalog_S_HZ_OPT_MAX
+       Type: float64 | Unique: 3,955 | Nulls: 959 (16.0%)
+   134. phl_exoplanet_catalog_S_HZ_CON_MIN
+       Type: float64 | Unique: 3,955 | Nulls: 959 (16.0%)
+   135. phl_exoplanet_catalog_S_HZ_CON_MAX
+       Type: float64 | Unique: 3,955 | Nulls: 959 (16.0%)
+   136. phl_exoplanet_catalog_P_HABZONE_OPT
+       Type: float64 | Unique: 2 | Nulls: 793 (13.2%)
+   137. phl_exoplanet_catalog_P_HABZONE_CON
+       Type: float64 | Unique: 2 | Nulls: 793 (13.2%)
+   138. phl_exoplanet_catalog_P_HABITABLE
+       Type: float64 | Unique: 3 | Nulls: 793 (13.2%)
+   139. phl_exoplanet_catalog_P_ESI
+       Type: float64 | Unique: 5,023 | Nulls: 960 (16.1%)
+   140. toi_candidates_tid
+       Type: float64 | Unique: 1,122 | Nulls: 4,522 (75.6%)
+   141. toi_candidates_toi
+       Type: float64 | Unique: 1,122 | Nulls: 4,522 (75.6%)
+   142. toi_candidates_toidisplay
+       Type: object | Unique: 1,122 | Nulls: 4,522 (75.6%)
+   143. toi_candidates_tfopwg_disp
+       Type: object | Unique: 5 | Nulls: 4,522 (75.6%)
+   144. toi_candidates_st_tmag
+       Type: float64 | Unique: 1,110 | Nulls: 4,522 (75.6%)
+   145. toi_candidates_ra
+       Type: float64 | Unique: 1,122 | Nulls: 4,522 (75.6%)
+   146. toi_candidates_dec
+       Type: float64 | Unique: 1,122 | Nulls: 4,522 (75.6%)
+   147. toi_candidates_pl_orbper
+       Type: float64 | Unique: 1,107 | Nulls: 4,545 (76.0%)
+   148. toi_candidates_pl_orbpererr1
+       Type: float64 | Unique: 586 | Nulls: 4,549 (76.0%)
+   149. toi_candidates_pl_orbpererr2
+       Type: float64 | Unique: 586 | Nulls: 4,549 (76.0%)
+   150. toi_candidates_pl_rade
+       Type: float64 | Unique: 1,114 | Nulls: 4,534 (75.8%)
+   151. toi_candidates_pl_radeerr1
+       Type: float64 | Unique: 1,095 | Nulls: 4,553 (76.1%)
+   152. toi_candidates_pl_radeerr2
+       Type: float64 | Unique: 1,095 | Nulls: 4,553 (76.1%)
+   153. toi_candidates_pl_insol
+       Type: float64 | Unique: 1,117 | Nulls: 4,527 (75.7%)
+   154. toi_candidates_pl_insolerr1
+       Type: float64 | Unique: 0 | Nulls: 5,983 (100.0%)
+   155. toi_candidates_pl_insolerr2
+       Type: float64 | Unique: 0 | Nulls: 5,983 (100.0%)
+   156. toi_candidates_pl_eqt
+       Type: float64 | Unique: 1,059 | Nulls: 4,528 (75.7%)
+   157. toi_candidates_pl_eqterr1
+       Type: float64 | Unique: 0 | Nulls: 5,983 (100.0%)
+   158. toi_candidates_pl_eqterr2
+       Type: float64 | Unique: 0 | Nulls: 5,983 (100.0%)
+   159. toi_candidates_st_dist
+       Type: float64 | Unique: 1,115 | Nulls: 4,538 (75.8%)
+   160. toi_candidates_st_disterr1
+       Type: float64 | Unique: 1,090 | Nulls: 4,546 (76.0%)
+   161. toi_candidates_st_disterr2
+       Type: float64 | Unique: 1,090 | Nulls: 4,546 (76.0%)
+   162. toi_candidates_st_teff
+       Type: float64 | Unique: 995 | Nulls: 4,522 (75.6%)
+   163. toi_candidates_st_tefferr1
+       Type: float64 | Unique: 645 | Nulls: 4,675 (78.1%)
+   164. toi_candidates_st_tefferr2
+       Type: float64 | Unique: 645 | Nulls: 4,675 (78.1%)
+   165. toi_candidates_st_logg
+       Type: float64 | Unique: 695 | Nulls: 4,538 (75.8%)
+   166. toi_candidates_st_loggerr1
+       Type: float64 | Unique: 462 | Nulls: 4,815 (80.5%)
+   167. toi_candidates_st_loggerr2
+       Type: float64 | Unique: 462 | Nulls: 4,815 (80.5%)
+   168. toi_candidates_st_rad
+       Type: float64 | Unique: 797 | Nulls: 4,534 (75.8%)
+   169. toi_candidates_st_raderr1
+       Type: float64 | Unique: 538 | Nulls: 4,667 (78.0%)
+   170. toi_candidates_st_raderr2
+       Type: float64 | Unique: 538 | Nulls: 4,667 (78.0%)
+   171. toi_candidates_sectors
+       Type: float64 | Unique: 0 | Nulls: 5,983 (100.0%)
+   172. toi_candidates_toi_created
+       Type: object | Unique: 550 | Nulls: 4,522 (75.6%)
+   173. toi_candidates_rowupdate
+       Type: object | Unique: 273 | Nulls: 4,522 (75.6%)
+   174. toi_candidates_release_date
+       Type: object | Unique: 1 | Nulls: 4,522 (75.6%)
+   175. toi_candidates_match_separation_arcsec
+       Type: float64 | Unique: 1,049 | Nulls: 4,522 (75.6%)
+   176. toi_candidates_match_quality
+       Type: object | Unique: 1 | Nulls: 4,522 (75.6%)
+   177. koi_candidates_kepid
+       Type: float64 | Unique: 1,980 | Nulls: 3,170 (53.0%)
+   178. koi_candidates_kepoi_name
+       Type: object | Unique: 1,980 | Nulls: 3,170 (53.0%)
+   179. koi_candidates_kepler_name
+       Type: object | Unique: 1,931 | Nulls: 3,228 (54.0%)
+   180. koi_candidates_ra
+       Type: float64 | Unique: 1,978 | Nulls: 3,170 (53.0%)
+   181. koi_candidates_dec
+       Type: float64 | Unique: 1,979 | Nulls: 3,170 (53.0%)
+   182. koi_candidates_koi_gmag
+       Type: float64 | Unique: 1,626 | Nulls: 3,171 (53.0%)
+   183. koi_candidates_koi_rmag
+       Type: float64 | Unique: 1,544 | Nulls: 3,170 (53.0%)
+   184. koi_candidates_koi_imag
+       Type: float64 | Unique: 1,508 | Nulls: 3,217 (53.8%)
+   185. koi_candidates_koi_zmag
+       Type: float64 | Unique: 1,449 | Nulls: 3,293 (55.0%)
+   186. koi_candidates_koi_jmag
+       Type: float64 | Unique: 1,523 | Nulls: 3,170 (53.0%)
+   187. koi_candidates_koi_hmag
+       Type: float64 | Unique: 1,520 | Nulls: 3,170 (53.0%)
+   188. koi_candidates_koi_kmag
+       Type: float64 | Unique: 1,512 | Nulls: 3,170 (53.0%)
+   189. koi_candidates_koi_kepmag
+       Type: float64 | Unique: 1,542 | Nulls: 3,170 (53.0%)
+   190. koi_candidates_koi_vet_stat
+       Type: object | Unique: 1 | Nulls: 3,170 (53.0%)
+   191. koi_candidates_koi_quarters
+       Type: object | Unique: 60 | Nulls: 3,180 (53.1%)
+   192. koi_candidates_koi_disposition
+       Type: object | Unique: 3 | Nulls: 3,170 (53.0%)
+   193. koi_candidates_koi_pdisposition
+       Type: object | Unique: 2 | Nulls: 3,170 (53.0%)
+   194. koi_candidates_koi_num_transits
+       Type: float64 | Unique: 584 | Nulls: 3,180 (53.1%)
+   195. koi_candidates_koi_max_sngle_ev
+       Type: float64 | Unique: 1,973 | Nulls: 3,180 (53.1%)
+   196. koi_candidates_koi_max_mult_ev
+       Type: float64 | Unique: 1,973 | Nulls: 3,180 (53.1%)
+   197. koi_candidates_koi_model_snr
+       Type: float64 | Unique: 866 | Nulls: 3,173 (53.0%)
+   198. koi_candidates_koi_model_dof
+       Type: float64 | Unique: 0 | Nulls: 5,983 (100.0%)
+   199. koi_candidates_koi_model_chisq
+       Type: float64 | Unique: 0 | Nulls: 5,983 (100.0%)
+   200. koi_candidates_koi_time0bk
+       Type: float64 | Unique: 1,980 | Nulls: 3,170 (53.0%)
+   201. koi_candidates_koi_time0bk_err1
+       Type: float64 | Unique: 981 | Nulls: 3,175 (53.1%)
+   202. koi_candidates_koi_time0bk_err2
+       Type: float64 | Unique: 981 | Nulls: 3,175 (53.1%)
+   203. koi_candidates_koi_eccen
+       Type: float64 | Unique: 1 | Nulls: 3,173 (53.0%)
+   204. koi_candidates_koi_eccen_err1
+       Type: float64 | Unique: 0 | Nulls: 5,983 (100.0%)
+   205. koi_candidates_koi_eccen_err2
+       Type: float64 | Unique: 0 | Nulls: 5,983 (100.0%)
+   206. koi_candidates_koi_longp
+       Type: float64 | Unique: 0 | Nulls: 5,983 (100.0%)
+   207. koi_candidates_koi_longp_err1
+       Type: float64 | Unique: 0 | Nulls: 5,983 (100.0%)
+   208. koi_candidates_koi_longp_err2
+       Type: float64 | Unique: 0 | Nulls: 5,983 (100.0%)
+   209. koi_candidates_koi_prad
+       Type: float64 | Unique: 565 | Nulls: 3,173 (53.0%)
+   210. koi_candidates_koi_prad_err1
+       Type: float64 | Unique: 231 | Nulls: 3,173 (53.0%)
+   211. koi_candidates_koi_prad_err2
+       Type: float64 | Unique: 210 | Nulls: 3,173 (53.0%)
+   212. koi_candidates_koi_sma
+       Type: float64 | Unique: 1,384 | Nulls: 3,173 (53.0%)
+   213. koi_candidates_koi_sma_err1
+       Type: float64 | Unique: 0 | Nulls: 5,983 (100.0%)
+   214. koi_candidates_koi_sma_err2
+       Type: float64 | Unique: 0 | Nulls: 5,983 (100.0%)
+   215. koi_candidates_koi_impact
+       Type: float64 | Unique: 821 | Nulls: 3,173 (53.0%)
+   216. koi_candidates_koi_impact_err1
+       Type: float64 | Unique: 480 | Nulls: 3,175 (53.1%)
+   217. koi_candidates_koi_impact_err2
+       Type: float64 | Unique: 665 | Nulls: 3,175 (53.1%)
+   218. koi_candidates_koi_duration
+       Type: float64 | Unique: 1,911 | Nulls: 3,170 (53.0%)
+   219. koi_candidates_koi_duration_err1
+       Type: float64 | Unique: 935 | Nulls: 3,175 (53.1%)
+   220. koi_candidates_koi_duration_err2
+       Type: float64 | Unique: 935 | Nulls: 3,175 (53.1%)
+   221. koi_candidates_koi_depth
+       Type: float64 | Unique: 1,846 | Nulls: 3,173 (53.0%)
+   222. koi_candidates_koi_depth_err1
+       Type: float64 | Unique: 549 | Nulls: 3,175 (53.1%)
+   223. koi_candidates_koi_depth_err2
+       Type: float64 | Unique: 549 | Nulls: 3,175 (53.1%)
+   224. koi_candidates_koi_period
+       Type: float64 | Unique: 1,980 | Nulls: 3,170 (53.0%)
+   225. koi_candidates_koi_period_err1
+       Type: float64 | Unique: 1,871 | Nulls: 3,175 (53.1%)
+   226. koi_candidates_koi_period_err2
+       Type: float64 | Unique: 1,871 | Nulls: 3,175 (53.1%)
+   227. koi_candidates_koi_dor
+       Type: float64 | Unique: 1,655 | Nulls: 3,173 (53.0%)
+   228. koi_candidates_koi_dor_err1
+       Type: float64 | Unique: 592 | Nulls: 3,175 (53.1%)
+   229. koi_candidates_koi_dor_err2
+       Type: float64 | Unique: 592 | Nulls: 3,175 (53.1%)
+   230. koi_candidates_koi_incl
+       Type: float64 | Unique: 627 | Nulls: 3,173 (53.0%)
+   231. koi_candidates_koi_incl_err1
+       Type: float64 | Unique: 0 | Nulls: 5,983 (100.0%)
+   232. koi_candidates_koi_incl_err2
+       Type: float64 | Unique: 0 | Nulls: 5,983 (100.0%)
+   233. koi_candidates_koi_teq
+       Type: float64 | Unique: 1,024 | Nulls: 3,173 (53.0%)
+   234. koi_candidates_koi_teq_err1
+       Type: float64 | Unique: 0 | Nulls: 5,983 (100.0%)
+   235. koi_candidates_koi_teq_err2
+       Type: float64 | Unique: 0 | Nulls: 5,983 (100.0%)
+   236. koi_candidates_koi_steff
+       Type: float64 | Unique: 1,143 | Nulls: 3,173 (53.0%)
+   237. koi_candidates_koi_steff_err1
+       Type: float64 | Unique: 164 | Nulls: 3,173 (53.0%)
+   238. koi_candidates_koi_steff_err2
+       Type: float64 | Unique: 210 | Nulls: 3,197 (53.4%)
+   239. koi_candidates_koi_slogg
+       Type: float64 | Unique: 738 | Nulls: 3,173 (53.0%)
+   240. koi_candidates_koi_slogg_err1
+       Type: float64 | Unique: 229 | Nulls: 3,173 (53.0%)
+   241. koi_candidates_koi_slogg_err2
+       Type: float64 | Unique: 208 | Nulls: 3,173 (53.0%)
+   242. koi_candidates_koi_smet
+       Type: float64 | Unique: 79 | Nulls: 3,173 (53.0%)
+   243. koi_candidates_koi_smet_err1
+       Type: float64 | Unique: 14 | Nulls: 3,173 (53.0%)
+   244. koi_candidates_koi_smet_err2
+       Type: float64 | Unique: 16 | Nulls: 3,173 (53.0%)
+   245. koi_candidates_koi_srad
+       Type: float64 | Unique: 958 | Nulls: 3,173 (53.0%)
+   246. koi_candidates_koi_srad_err1
+       Type: float64 | Unique: 428 | Nulls: 3,173 (53.0%)
+   247. koi_candidates_koi_srad_err2
+       Type: float64 | Unique: 421 | Nulls: 3,173 (53.0%)
+   248. koi_candidates_koi_smass
+       Type: float64 | Unique: 724 | Nulls: 3,173 (53.0%)
+   249. koi_candidates_koi_smass_err1
+       Type: float64 | Unique: 191 | Nulls: 3,173 (53.0%)
+   250. koi_candidates_koi_smass_err2
+       Type: float64 | Unique: 223 | Nulls: 3,173 (53.0%)
+   251. koi_candidates_koi_comment
+       Type: object | Unique: 50 | Nulls: 3,180 (53.1%)
+   252. koi_candidates_koi_vet_date
+       Type: object | Unique: 1 | Nulls: 3,170 (53.0%)
+   253. koi_candidates_koi_tce_plnt_num
+       Type: float64 | Unique: 5 | Nulls: 3,176 (53.1%)
+   254. koi_candidates_koi_tce_delivname
+       Type: object | Unique: 3 | Nulls: 3,176 (53.1%)
+   255. koi_candidates_koi_disp_prov
+       Type: object | Unique: 1 | Nulls: 3,170 (53.0%)
+   256. koi_candidates_koi_parm_prov
+       Type: object | Unique: 3 | Nulls: 3,170 (53.0%)
+   257. koi_candidates_koi_fpflag_nt
+       Type: float64 | Unique: 3 | Nulls: 3,170 (53.0%)
+   258. koi_candidates_koi_fpflag_ss
+       Type: float64 | Unique: 2 | Nulls: 3,170 (53.0%)
+   259. koi_candidates_koi_fpflag_co
+       Type: float64 | Unique: 2 | Nulls: 3,170 (53.0%)
+   260. koi_candidates_koi_fpflag_ec
+       Type: float64 | Unique: 2 | Nulls: 3,170 (53.0%)
+   261. koi_candidates_koi_insol
+       Type: float64 | Unique: 1,897 | Nulls: 3,172 (53.0%)
+   262. koi_candidates_koi_insol_err1
+       Type: float64 | Unique: 1,825 | Nulls: 3,172 (53.0%)
+   263. koi_candidates_koi_insol_err2
+       Type: float64 | Unique: 1,706 | Nulls: 3,172 (53.0%)
+   264. koi_candidates_koi_score
+       Type: float64 | Unique: 198 | Nulls: 3,182 (53.2%)
+   265. koi_candidates_match_separation_arcsec
+       Type: float64 | Unique: 1,983 | Nulls: 3,170 (53.0%)
+   266. koi_candidates_match_quality
+       Type: object | Unique: 1 | Nulls: 3,170 (53.0%)
+   267. exolife_star_id
+       Type: float64 | Unique: 3,978 | Nulls: 579 (9.7%)
+   268. exolife_planet_id
+       Type: object | Unique: 5,983 | Nulls: 0 (0.0%)
+   269. st_teff_units
+       Type: object | Unique: 1 | Nulls: 0 (0.0%)
+   270. st_lum_units
+       Type: object | Unique: 1 | Nulls: 0 (0.0%)
+   271. st_mass_units
+       Type: object | Unique: 1 | Nulls: 0 (0.0%)
+   272. st_rad_units
+       Type: object | Unique: 1 | Nulls: 0 (0.0%)
+   273. pl_orbsmax_units
+       Type: object | Unique: 1 | Nulls: 0 (0.0%)
+   274. pl_orbper_units
+       Type: object | Unique: 1 | Nulls: 0 (0.0%)
+   275. pl_orbper_flag_invalid
+       Type: bool | Unique: 1 | Nulls: 0 (0.0%)
+   276. pl_orbsmax_flag_invalid
+       Type: bool | Unique: 1 | Nulls: 0 (0.0%)
+   277. pl_orbeccen_flag_invalid
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   278. pl_rade_flag_invalid
+       Type: bool | Unique: 1 | Nulls: 0 (0.0%)
+   279. pl_masse_flag_invalid
+       Type: bool | Unique: 1 | Nulls: 0 (0.0%)
+   280. pl_orbper_corrected
+       Type: object | Unique: 1 | Nulls: 5,976 (99.9%)
+   281. data_completeness_score
+       Type: float64 | Unique: 5 | Nulls: 0 (0.0%)
+   282. crossmatch_quality
+       Type: object | Unique: 1 | Nulls: 0 (0.0%)
+   283. crossmatch_score
+       Type: float64 | Unique: 1 | Nulls: 0 (0.0%)
+   284. astrometry_quality_flag
+       Type: object | Unique: 3 | Nulls: 579 (9.7%)
+   285. hz_inner
+       Type: float64 | Unique: 4,385 | Nulls: 298 (5.0%)
+   286. hz_outer
+       Type: float64 | Unique: 4,385 | Nulls: 298 (5.0%)
+   287. hz_opt_inner
+       Type: float64 | Unique: 4,385 | Nulls: 298 (5.0%)
+   288. hz_opt_outer
+       Type: float64 | Unique: 4,385 | Nulls: 298 (5.0%)
+   289. stellar_flux_s
+       Type: float64 | Unique: 5,412 | Nulls: 570 (9.5%)
+   290. albedo
+       Type: float64 | Unique: 1 | Nulls: 0 (0.0%)
+   291. redistribution_factor
+       Type: float64 | Unique: 1 | Nulls: 0 (0.0%)
+   292. equilibrium_temperature
+       Type: float64 | Unique: 4,802 | Nulls: 1,181 (19.7%)
+   293. surface_gravity
+       Type: float64 | Unique: 2,102 | Nulls: 3,823 (63.9%)
+   294. escape_velocity
+       Type: float64 | Unique: 1,715 | Nulls: 4,232 (70.7%)
+   295. hz_position_conservative
+       Type: float64 | Unique: 5,402 | Nulls: 581 (9.7%)
+   296. hz_position_optimistic
+       Type: float64 | Unique: 5,402 | Nulls: 581 (9.7%)
+   297. stellar_flux_s_mean
+       Type: float64 | Unique: 5,412 | Nulls: 570 (9.5%)
+   298. equilibrium_temperature_mean
+       Type: float64 | Unique: 5,404 | Nulls: 579 (9.7%)
+   299. surface_gravity_mean
+       Type: float64 | Unique: 2,171 | Nulls: 3,810 (63.7%)
+   300. escape_velocity_mean
+       Type: float64 | Unique: 2,171 | Nulls: 3,810 (63.7%)
+   301. stellar_flux_s_std
+       Type: float64 | Unique: 3,914 | Nulls: 570 (9.5%)
+   302. equilibrium_temperature_std
+       Type: float64 | Unique: 5,390 | Nulls: 579 (9.7%)
+   303. surface_gravity_std
+       Type: float64 | Unique: 2,158 | Nulls: 3,810 (63.7%)
+   304. escape_velocity_std
+       Type: float64 | Unique: 2,159 | Nulls: 3,810 (63.7%)
+   305. stellar_flux_s_median
+       Type: float64 | Unique: 5,412 | Nulls: 570 (9.5%)
+   306. equilibrium_temperature_median
+       Type: float64 | Unique: 5,404 | Nulls: 579 (9.7%)
+   307. surface_gravity_median
+       Type: float64 | Unique: 2,171 | Nulls: 3,810 (63.7%)
+   308. escape_velocity_median
+       Type: float64 | Unique: 2,171 | Nulls: 3,810 (63.7%)
+   309. stellar_flux_s_q16
+       Type: float64 | Unique: 5,412 | Nulls: 570 (9.5%)
+   310. equilibrium_temperature_q16
+       Type: float64 | Unique: 5,404 | Nulls: 579 (9.7%)
+   311. surface_gravity_q16
+       Type: float64 | Unique: 2,171 | Nulls: 3,810 (63.7%)
+   312. escape_velocity_q16
+       Type: float64 | Unique: 2,171 | Nulls: 3,810 (63.7%)
+   313. stellar_flux_s_q84
+       Type: float64 | Unique: 5,412 | Nulls: 570 (9.5%)
+   314. equilibrium_temperature_q84
+       Type: float64 | Unique: 5,404 | Nulls: 579 (9.7%)
+   315. surface_gravity_q84
+       Type: float64 | Unique: 2,171 | Nulls: 3,810 (63.7%)
+   316. escape_velocity_q84
+       Type: float64 | Unique: 2,171 | Nulls: 3,810 (63.7%)
+   317. missing_pattern_missing_stellar_params
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   318. missing_pattern_missing_planetary_mass
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   319. missing_pattern_missing_planetary_radius
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   320. missing_pattern_missing_orbital_params
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   321. missing_pattern_missing_candidate_info
+       Type: bool | Unique: 1 | Nulls: 0 (0.0%)
+   322. st_teff_missing
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   323. st_lum_missing
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   324. st_mass_missing
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   325. st_rad_missing
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   326. pl_masse_missing
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   327. pl_massj_missing
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   328. pl_rade_missing
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   329. pl_radj_missing
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   330. pl_orbsmax_missing
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   331. pl_orbper_missing
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   332. pl_orbeccen_missing
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   333. nasa_source
+       Type: bool | Unique: 1 | Nulls: 0 (0.0%)
+   334. phl_source
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   335. gaia_source
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   336. sweet_source
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   337. distance_pc
+       Type: float64 | Unique: 3,977 | Nulls: 579 (9.7%)
+   338. distance_provenance
+       Type: object | Unique: 2 | Nulls: 579 (9.7%)
+   339. distance_units
+       Type: object | Unique: 1 | Nulls: 0 (0.0%)
+
+   ⚠️  DATA QUALITY CONCERNS:
+   Columns with >50% missing values:
+   - pl_orbinclerr1: 67.7% missing
+   - pl_orbinclerr2: 67.6% missing
+   - pl_orbeccenerr1: 70.2% missing
+   - pl_orbeccenerr2: 70.2% missing
+   - pl_eqterr1: 72.0% missing
+   - pl_eqterr2: 72.0% missing
+   - pl_denserr1: 77.8% missing
+   - pl_denserr2: 77.8% missing
+   - pl_pubdate: 100.0% missing
+   - pl_massj: 63.5% missing
+   - pl_massjerr1: 66.9% missing
+   - pl_massjerr2: 66.9% missing
+   - pl_masse: 63.5% missing
+   - pl_masseerr1: 66.9% missing
+   - pl_masseerr2: 66.9% missing
+   - sweet_cat_Vt: 74.9% missing
+   - phl_exoplanet_catalog_S_TYPE: 69.2% missing
+   - phl_exoplanet_catalog_P_TEMP_SURF: 61.1% missing
+   - toi_candidates_tid: 75.6% missing
+   - toi_candidates_toi: 75.6% missing
+   - toi_candidates_toidisplay: 75.6% missing
+   - toi_candidates_tfopwg_disp: 75.6% missing
+   - toi_candidates_st_tmag: 75.6% missing
+   - toi_candidates_ra: 75.6% missing
+   - toi_candidates_dec: 75.6% missing
+   - toi_candidates_pl_orbper: 76.0% missing
+   - toi_candidates_pl_orbpererr1: 76.0% missing
+   - toi_candidates_pl_orbpererr2: 76.0% missing
+   - toi_candidates_pl_rade: 75.8% missing
+   - toi_candidates_pl_radeerr1: 76.1% missing
+   - toi_candidates_pl_radeerr2: 76.1% missing
+   - toi_candidates_pl_insol: 75.7% missing
+   - toi_candidates_pl_insolerr1: 100.0% missing
+   - toi_candidates_pl_insolerr2: 100.0% missing
+   - toi_candidates_pl_eqt: 75.7% missing
+   - toi_candidates_pl_eqterr1: 100.0% missing
+   - toi_candidates_pl_eqterr2: 100.0% missing
+   - toi_candidates_st_dist: 75.8% missing
+   - toi_candidates_st_disterr1: 76.0% missing
+   - toi_candidates_st_disterr2: 76.0% missing
+   - toi_candidates_st_teff: 75.6% missing
+   - toi_candidates_st_tefferr1: 78.1% missing
+   - toi_candidates_st_tefferr2: 78.1% missing
+   - toi_candidates_st_logg: 75.8% missing
+   - toi_candidates_st_loggerr1: 80.5% missing
+   - toi_candidates_st_loggerr2: 80.5% missing
+   - toi_candidates_st_rad: 75.8% missing
+   - toi_candidates_st_raderr1: 78.0% missing
+   - toi_candidates_st_raderr2: 78.0% missing
+   - toi_candidates_sectors: 100.0% missing
+   - toi_candidates_toi_created: 75.6% missing
+   - toi_candidates_rowupdate: 75.6% missing
+   - toi_candidates_release_date: 75.6% missing
+   - toi_candidates_match_separation_arcsec: 75.6% missing
+   - toi_candidates_match_quality: 75.6% missing
+   - koi_candidates_kepid: 53.0% missing
+   - koi_candidates_kepoi_name: 53.0% missing
+   - koi_candidates_kepler_name: 54.0% missing
+   - koi_candidates_ra: 53.0% missing
+   - koi_candidates_dec: 53.0% missing
+   - koi_candidates_koi_gmag: 53.0% missing
+   - koi_candidates_koi_rmag: 53.0% missing
+   - koi_candidates_koi_imag: 53.8% missing
+   - koi_candidates_koi_zmag: 55.0% missing
+   - koi_candidates_koi_jmag: 53.0% missing
+   - koi_candidates_koi_hmag: 53.0% missing
+   - koi_candidates_koi_kmag: 53.0% missing
+   - koi_candidates_koi_kepmag: 53.0% missing
+   - koi_candidates_koi_vet_stat: 53.0% missing
+   - koi_candidates_koi_quarters: 53.1% missing
+   - koi_candidates_koi_disposition: 53.0% missing
+   - koi_candidates_koi_pdisposition: 53.0% missing
+   - koi_candidates_koi_num_transits: 53.1% missing
+   - koi_candidates_koi_max_sngle_ev: 53.1% missing
+   - koi_candidates_koi_max_mult_ev: 53.1% missing
+   - koi_candidates_koi_model_snr: 53.0% missing
+   - koi_candidates_koi_model_dof: 100.0% missing
+   - koi_candidates_koi_model_chisq: 100.0% missing
+   - koi_candidates_koi_time0bk: 53.0% missing
+   - koi_candidates_koi_time0bk_err1: 53.1% missing
+   - koi_candidates_koi_time0bk_err2: 53.1% missing
+   - koi_candidates_koi_eccen: 53.0% missing
+   - koi_candidates_koi_eccen_err1: 100.0% missing
+   - koi_candidates_koi_eccen_err2: 100.0% missing
+   - koi_candidates_koi_longp: 100.0% missing
+   - koi_candidates_koi_longp_err1: 100.0% missing
+   - koi_candidates_koi_longp_err2: 100.0% missing
+   - koi_candidates_koi_prad: 53.0% missing
+   - koi_candidates_koi_prad_err1: 53.0% missing
+   - koi_candidates_koi_prad_err2: 53.0% missing
+   - koi_candidates_koi_sma: 53.0% missing
+   - koi_candidates_koi_sma_err1: 100.0% missing
+   - koi_candidates_koi_sma_err2: 100.0% missing
+   - koi_candidates_koi_impact: 53.0% missing
+   - koi_candidates_koi_impact_err1: 53.1% missing
+   - koi_candidates_koi_impact_err2: 53.1% missing
+   - koi_candidates_koi_duration: 53.0% missing
+   - koi_candidates_koi_duration_err1: 53.1% missing
+   - koi_candidates_koi_duration_err2: 53.1% missing
+   - koi_candidates_koi_depth: 53.0% missing
+   - koi_candidates_koi_depth_err1: 53.1% missing
+   - koi_candidates_koi_depth_err2: 53.1% missing
+   - koi_candidates_koi_period: 53.0% missing
+   - koi_candidates_koi_period_err1: 53.1% missing
+   - koi_candidates_koi_period_err2: 53.1% missing
+   - koi_candidates_koi_dor: 53.0% missing
+   - koi_candidates_koi_dor_err1: 53.1% missing
+   - koi_candidates_koi_dor_err2: 53.1% missing
+   - koi_candidates_koi_incl: 53.0% missing
+   - koi_candidates_koi_incl_err1: 100.0% missing
+   - koi_candidates_koi_incl_err2: 100.0% missing
+   - koi_candidates_koi_teq: 53.0% missing
+   - koi_candidates_koi_teq_err1: 100.0% missing
+   - koi_candidates_koi_teq_err2: 100.0% missing
+   - koi_candidates_koi_steff: 53.0% missing
+   - koi_candidates_koi_steff_err1: 53.0% missing
+   - koi_candidates_koi_steff_err2: 53.4% missing
+   - koi_candidates_koi_slogg: 53.0% missing
+   - koi_candidates_koi_slogg_err1: 53.0% missing
+   - koi_candidates_koi_slogg_err2: 53.0% missing
+   - koi_candidates_koi_smet: 53.0% missing
+   - koi_candidates_koi_smet_err1: 53.0% missing
+   - koi_candidates_koi_smet_err2: 53.0% missing
+   - koi_candidates_koi_srad: 53.0% missing
+   - koi_candidates_koi_srad_err1: 53.0% missing
+   - koi_candidates_koi_srad_err2: 53.0% missing
+   - koi_candidates_koi_smass: 53.0% missing
+   - koi_candidates_koi_smass_err1: 53.0% missing
+   - koi_candidates_koi_smass_err2: 53.0% missing
+   - koi_candidates_koi_comment: 53.1% missing
+   - koi_candidates_koi_vet_date: 53.0% missing
+   - koi_candidates_koi_tce_plnt_num: 53.1% missing
+   - koi_candidates_koi_tce_delivname: 53.1% missing
+   - koi_candidates_koi_disp_prov: 53.0% missing
+   - koi_candidates_koi_parm_prov: 53.0% missing
+   - koi_candidates_koi_fpflag_nt: 53.0% missing
+   - koi_candidates_koi_fpflag_ss: 53.0% missing
+   - koi_candidates_koi_fpflag_co: 53.0% missing
+   - koi_candidates_koi_fpflag_ec: 53.0% missing
+   - koi_candidates_koi_insol: 53.0% missing
+   - koi_candidates_koi_insol_err1: 53.0% missing
+   - koi_candidates_koi_insol_err2: 53.0% missing
+   - koi_candidates_koi_score: 53.2% missing
+   - koi_candidates_match_separation_arcsec: 53.0% missing
+   - koi_candidates_match_quality: 53.0% missing
+   - pl_orbper_corrected: 99.9% missing
+   - surface_gravity: 63.9% missing
+   - escape_velocity: 70.7% missing
+   - surface_gravity_mean: 63.7% missing
+   - escape_velocity_mean: 63.7% missing
+   - surface_gravity_std: 63.7% missing
+   - escape_velocity_std: 63.7% missing
+   - surface_gravity_median: 63.7% missing
+   - escape_velocity_median: 63.7% missing
+   - surface_gravity_q16: 63.7% missing
+   - escape_velocity_q16: 63.7% missing
+   - surface_gravity_q84: 63.7% missing
+   - escape_velocity_q84: 63.7% missing
+
+   NUMERIC STATISTICS (top 5 columns):
+   disc_year:
+     Mean: 2016.753 | Std: 4.837
+     Min: 1992.000 | Max: 2025.000
+     25%: 2014.000 | 75%: 2021.000
+   ra:
+     Mean: 233.917 | Std: 91.183
+     Min: 0.186 | Max: 359.975
+     25%: 175.610 | 75%: 293.284
+   dec:
+     Mean: 18.811 | Std: 36.589
+     Min: -88.121 | Max: 86.860
+     25%: -9.995 | 75%: 45.440
+   pl_orbper:
+     Mean: 74605.763 | Std: 5184903.724
+     Min: 0.091 | Max: 390483064.227
+     25%: 4.338 | 75%: 39.782
+   pl_orbpererr1:
+     Mean: 92232.999 | Std: 6524952.219
+     Min: 0.000 | Max: 470000000.000
+     25%: 0.000 | 75%: 0.002
+
+   CATEGORICAL VALUE DISTRIBUTIONS:
+   pl_letter:
+     'b': 4,456
+     'c': 1,012
+     'd': 328
+     'e': 121
+     'f': 44
+     ... and 3 more values
+   disc_method:
+     'tran': 4,437
+     'rv': 1,131
+     'micro': 250
+     'ima': 84
+     'ttv': 39
+     ... and 6 more values
+   gaia_dr3_astrophysical_parameters_data_source:
+     'DR3_direct': 5,404
+
+
+❌ ERROR ANALYZING: exolife_catalog_derived_features.parquet
+   Error: unhashable type: 'dict'
+
+📊 EXOLIFE_CATALOG_PLANET_ALIASES.PARQUET
+   ==================================================
+   File size: 1.18 MB
+   Dimensions: 267,429 rows × 3 columns
+   Memory usage: 55.18 MB
+   Duplicated rows: 0
+
+   COLUMNS:
+    1. exolife_planet_id
+       Type: object | Unique: 5,983 | Nulls: 0 (0.0%)
+    2. alias_type
+       Type: object | Unique: 110 | Nulls: 0 (0.0%)
+    3. alias_value
+       Type: object | Unique: 76,821 | Nulls: 0 (0.0%)
+
+
+📊 EXOLIFE_CATALOG_PLANETS.PARQUET
+   ==================================================
+   File size: 0.62 MB
+   Dimensions: 5,983 rows × 54 columns
+   Memory usage: 4.03 MB
+   Duplicated rows: 0
+
+   COLUMNS:
+    1. pl_name
+       Type: object | Unique: 5,983 | Nulls: 0 (0.0%)
+    2. pl_letter
+       Type: object | Unique: 8 | Nulls: 0 (0.0%)
+    3. pl_orbper
+       Type: float64 | Unique: 5,669 | Nulls: 301 (5.0%)
+    4. pl_orbpererr1
+       Type: float64 | Unique: 2,646 | Nulls: 794 (13.3%)
+    5. pl_orbpererr2
+       Type: float64 | Unique: 2,644 | Nulls: 794 (13.3%)
+    6. pl_orbsmax
+       Type: float64 | Unique: 3,459 | Nulls: 296 (5.0%)
+    7. pl_orbsmaxerr1
+       Type: float64 | Unique: 753 | Nulls: 2,240 (37.4%)
+    8. pl_orbsmaxerr2
+       Type: float64 | Unique: 745 | Nulls: 2,240 (37.4%)
+    9. pl_orbincl
+       Type: float64 | Unique: 1,333 | Nulls: 1,486 (24.8%)
+   10. pl_orbinclerr1
+       Type: float64 | Unique: 577 | Nulls: 4,048 (67.7%)
+   11. pl_orbinclerr2
+       Type: float64 | Unique: 564 | Nulls: 4,046 (67.6%)
+   12. pl_orbeccen
+       Type: float64 | Unique: 579 | Nulls: 871 (14.6%)
+   13. pl_orbeccenerr1
+       Type: float64 | Unique: 301 | Nulls: 4,198 (70.2%)
+   14. pl_orbeccenerr2
+       Type: float64 | Unique: 288 | Nulls: 4,198 (70.2%)
+   15. pl_eqt
+       Type: float64 | Unique: 1,854 | Nulls: 1,524 (25.5%)
+   16. pl_eqterr1
+       Type: float64 | Unique: 323 | Nulls: 4,306 (72.0%)
+   17. pl_eqterr2
+       Type: float64 | Unique: 315 | Nulls: 4,306 (72.0%)
+   18. pl_insol
+       Type: float64 | Unique: 3,980 | Nulls: 1,798 (30.1%)
+   19. pl_insolerr1
+       Type: float64 | Unique: 2,691 | Nulls: 2,443 (40.8%)
+   20. pl_insolerr2
+       Type: float64 | Unique: 2,657 | Nulls: 2,443 (40.8%)
+   21. pl_dens
+       Type: float64 | Unique: 1,446 | Nulls: 106 (1.8%)
+   22. pl_denserr1
+       Type: float64 | Unique: 401 | Nulls: 4,657 (77.8%)
+   23. pl_denserr2
+       Type: float64 | Unique: 369 | Nulls: 4,657 (77.8%)
+   24. pl_radj
+       Type: float64 | Unique: 2,458 | Nulls: 22 (0.4%)
+   25. pl_radjerr1
+       Type: float64 | Unique: 795 | Nulls: 1,853 (31.0%)
+   26. pl_radjerr2
+       Type: float64 | Unique: 719 | Nulls: 1,853 (31.0%)
+   27. pl_rade
+       Type: float64 | Unique: 2,099 | Nulls: 22 (0.4%)
+   28. pl_radeerr1
+       Type: float64 | Unique: 784 | Nulls: 1,853 (31.0%)
+   29. pl_radeerr2
+       Type: float64 | Unique: 735 | Nulls: 1,853 (31.0%)
+   30. pl_pubdate
+       Type: float64 | Unique: 0 | Nulls: 5,983 (100.0%)
+   31. pl_massj
+       Type: float64 | Unique: 1,535 | Nulls: 3,796 (63.5%)
+   32. pl_massjerr1
+       Type: float64 | Unique: 796 | Nulls: 4,004 (66.9%)
+   33. pl_massjerr2
+       Type: float64 | Unique: 743 | Nulls: 4,004 (66.9%)
+   34. pl_masse
+       Type: float64 | Unique: 1,713 | Nulls: 3,796 (63.5%)
+   35. pl_masseerr1
+       Type: float64 | Unique: 986 | Nulls: 4,004 (66.9%)
+   36. pl_masseerr2
+       Type: float64 | Unique: 938 | Nulls: 4,004 (66.9%)
+   37. exolife_star_id
+       Type: float64 | Unique: 3,978 | Nulls: 579 (9.7%)
+   38. exolife_planet_id
+       Type: object | Unique: 5,983 | Nulls: 0 (0.0%)
+   39. pl_orbsmax_units
+       Type: object | Unique: 1 | Nulls: 0 (0.0%)
+   40. pl_orbper_units
+       Type: object | Unique: 1 | Nulls: 0 (0.0%)
+   41. pl_orbper_flag_invalid
+       Type: bool | Unique: 1 | Nulls: 0 (0.0%)
+   42. pl_orbsmax_flag_invalid
+       Type: bool | Unique: 1 | Nulls: 0 (0.0%)
+   43. pl_orbeccen_flag_invalid
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   44. pl_rade_flag_invalid
+       Type: bool | Unique: 1 | Nulls: 0 (0.0%)
+   45. pl_masse_flag_invalid
+       Type: bool | Unique: 1 | Nulls: 0 (0.0%)
+   46. pl_orbper_corrected
+       Type: object | Unique: 1 | Nulls: 5,976 (99.9%)
+   47. crossmatch_quality
+       Type: object | Unique: 1 | Nulls: 0 (0.0%)
+   48. pl_masse_missing
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   49. pl_massj_missing
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   50. pl_rade_missing
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   51. pl_radj_missing
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   52. pl_orbsmax_missing
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   53. pl_orbper_missing
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   54. pl_orbeccen_missing
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+
+   ⚠️  DATA QUALITY CONCERNS:
+   Columns with >50% missing values:
+   - pl_orbinclerr1: 67.7% missing
+   - pl_orbinclerr2: 67.6% missing
+   - pl_orbeccenerr1: 70.2% missing
+   - pl_orbeccenerr2: 70.2% missing
+   - pl_eqterr1: 72.0% missing
+   - pl_eqterr2: 72.0% missing
+   - pl_denserr1: 77.8% missing
+   - pl_denserr2: 77.8% missing
+   - pl_pubdate: 100.0% missing
+   - pl_massj: 63.5% missing
+   - pl_massjerr1: 66.9% missing
+   - pl_massjerr2: 66.9% missing
+   - pl_masse: 63.5% missing
+   - pl_masseerr1: 66.9% missing
+   - pl_masseerr2: 66.9% missing
+   - pl_orbper_corrected: 99.9% missing
+
+   NUMERIC STATISTICS (top 5 columns):
+   pl_orbper:
+     Mean: 74605.763 | Std: 5184903.724
+     Min: 0.091 | Max: 390483064.227
+     25%: 4.338 | 75%: 39.782
+   pl_orbpererr1:
+     Mean: 92232.999 | Std: 6524952.219
+     Min: 0.000 | Max: 470000000.000
+     25%: 0.000 | 75%: 0.002
+   pl_orbpererr2:
+     Mean: -21065.103 | Std: 1390291.059
+     Min: -100000000.000 | Max: 0.000
+     25%: -0.002 | 75%: -0.000
+   pl_orbsmax:
+     Mean: 15.556 | Std: 353.115
+     Min: 0.004 | Max: 19000.000
+     25%: 0.052 | 75%: 0.300
+   pl_orbsmaxerr1:
+     Mean: 1.842 | Std: 85.281
+     Min: 0.000 | Max: 5205.000
+     25%: 0.001 | 75%: 0.015
+
+   CATEGORICAL VALUE DISTRIBUTIONS:
+   pl_letter:
+     'b': 4,456
+     'c': 1,012
+     'd': 328
+     'e': 121
+     'f': 44
+     ... and 3 more values
+   pl_orbsmax_units:
+     'AU': 5,983
+   pl_orbper_units:
+     'days': 5,983
+
+
+📊 EXOLIFE_CATALOG_MEASUREMENTS.PARQUET
+   ==================================================
+   File size: 1.68 MB
+   Dimensions: 322,033 rows × 10 columns
+   Memory usage: 105.41 MB
+   Duplicated rows: 0
+
+   COLUMNS:
+    1. object_id
+       Type: object | Unique: 9,962 | Nulls: 0 (0.0%)
+    2. object_type
+       Type: object | Unique: 2 | Nulls: 0 (0.0%)
+    3. name
+       Type: object | Unique: 79 | Nulls: 0 (0.0%)
+    4. value
+       Type: float64 | Unique: 83,217 | Nulls: 0 (0.0%)
+    5. err
+       Type: float64 | Unique: 17,633 | Nulls: 260,086 (80.8%)
+    6. units
+       Type: object | Unique: 6 | Nulls: 293,246 (91.1%)
+    7. source
+       Type: object | Unique: 0 | Nulls: 322,033 (100.0%)
+    8. method
+       Type: object | Unique: 0 | Nulls: 322,033 (100.0%)
+    9. epoch
+       Type: object | Unique: 0 | Nulls: 322,033 (100.0%)
+   10. provenance
+       Type: object | Unique: 0 | Nulls: 322,033 (100.0%)
+
+   ⚠️  DATA QUALITY CONCERNS:
+   Columns with >50% missing values:
+   - err: 80.8% missing
+   - units: 91.1% missing
+   - source: 100.0% missing
+   - method: 100.0% missing
+   - epoch: 100.0% missing
+   - provenance: 100.0% missing
+
+   NUMERIC STATISTICS (top 5 columns):
+   value:
+     Mean: 3185.587 | Std: 1115730.734
+     Min: -100000000.000 | Max: 470000000.000
+     25%: 0.000 | 75%: 1.150
+   err:
+     Mean: 4761.447 | Std: 1145263.149
+     Min: 0.000 | Max: 285000000.000
+     25%: 0.025 | 75%: 1.046
+
+   CATEGORICAL VALUE DISTRIBUTIONS:
+   object_type:
+     'planet': 212,386
+     'star': 109,647
+   units:
+     'AU': 5,687
+     'days': 5,682
+     'M_sun': 4,430
+     'K': 4,403
+     'R_sun': 4,354
+     ... and 1 more values
+   source:
+
+
+📊 EXOLIFE_CATALOG_STAR_ALIASES.PARQUET
+   ==================================================
+   File size: 0.19 MB
+   Dimensions: 11,773 rows × 3 columns
+   Memory usage: 1.71 MB
+   Duplicated rows: 0
+
+   COLUMNS:
+    1. exolife_star_id
+       Type: float64 | Unique: 3,978 | Nulls: 842 (7.2%)
+    2. alias_type
+       Type: object | Unique: 4 | Nulls: 0 (0.0%)
+    3. alias_value
+       Type: object | Unique: 11,742 | Nulls: 0 (0.0%)
+
+   NUMERIC STATISTICS (top 5 columns):
+   exolife_star_id:
+     Mean: 2693863952466707456.000 | Std: 1480990649316298496.000
+     Min: 3179036008830848.000 | Max: 6911950900211768320.000
+     25%: 2078175627609397248.000 | 75%: 3083043390405346304.000
+
+   CATEGORICAL VALUE DISTRIBUTIONS:
+   alias_type:
+     'systemid': 4,475
+     'gaia_dr2_source_id': 4,179
+     'koi_candidates_kepid': 1,983
+     'toi_candidates_tid': 1,136
+
+
+📊 EXOLIFE_CATALOG_STARS.PARQUET
+   ==================================================
+   File size: 0.4 MB
+   Dimensions: 3,979 rows × 35 columns
+   Memory usage: 1.96 MB
+   Duplicated rows: 0
+
+   COLUMNS:
+    1. exolife_star_id
+       Type: float64 | Unique: 3,978 | Nulls: 1 (0.0%)
+    2. st_teff
+       Type: float64 | Unique: 2,118 | Nulls: 7 (0.2%)
+    3. st_tefferr1
+       Type: float64 | Unique: 1,416 | Nulls: 148 (3.7%)
+    4. st_tefferr2
+       Type: float64 | Unique: 1,445 | Nulls: 148 (3.7%)
+    5. st_met
+       Type: float64 | Unique: 569 | Nulls: 197 (5.0%)
+    6. st_meterr1
+       Type: float64 | Unique: 285 | Nulls: 429 (10.8%)
+    7. st_meterr2
+       Type: float64 | Unique: 319 | Nulls: 429 (10.8%)
+    8. st_lum
+       Type: float64 | Unique: 3,779 | Nulls: 12 (0.3%)
+    9. st_lumerr1
+       Type: float64 | Unique: 1,820 | Nulls: 1,523 (38.3%)
+   10. st_lumerr2
+       Type: float64 | Unique: 1,858 | Nulls: 1,528 (38.4%)
+   11. st_logg
+       Type: float64 | Unique: 1,141 | Nulls: 20 (0.5%)
+   12. st_loggerr1
+       Type: float64 | Unique: 459 | Nulls: 156 (3.9%)
+   13. st_loggerr2
+       Type: float64 | Unique: 520 | Nulls: 156 (3.9%)
+   14. st_age
+       Type: float64 | Unique: 608 | Nulls: 740 (18.6%)
+   15. st_ageerr1
+       Type: float64 | Unique: 726 | Nulls: 890 (22.4%)
+   16. st_ageerr2
+       Type: float64 | Unique: 564 | Nulls: 890 (22.4%)
+   17. st_mass
+       Type: float64 | Unique: 1,072 | Nulls: 5 (0.1%)
+   18. st_masserr1
+       Type: float64 | Unique: 497 | Nulls: 182 (4.6%)
+   19. st_masserr2
+       Type: float64 | Unique: 461 | Nulls: 182 (4.6%)
+   20. st_dens
+       Type: float64 | Unique: 2,977 | Nulls: 196 (4.9%)
+   21. st_denserr1
+       Type: float64 | Unique: 2,387 | Nulls: 295 (7.4%)
+   22. st_denserr2
+       Type: float64 | Unique: 2,380 | Nulls: 295 (7.4%)
+   23. st_rad
+       Type: float64 | Unique: 1,618 | Nulls: 16 (0.4%)
+   24. st_raderr1
+       Type: float64 | Unique: 934 | Nulls: 124 (3.1%)
+   25. st_raderr2
+       Type: float64 | Unique: 829 | Nulls: 124 (3.1%)
+   26. gaia_dr3_astrophysical_parameters_ruwe
+       Type: float64 | Unique: 3,973 | Nulls: 1 (0.0%)
+   27. st_teff_units
+       Type: object | Unique: 1 | Nulls: 0 (0.0%)
+   28. st_lum_units
+       Type: object | Unique: 1 | Nulls: 0 (0.0%)
+   29. st_mass_units
+       Type: object | Unique: 1 | Nulls: 0 (0.0%)
+   30. st_rad_units
+       Type: object | Unique: 1 | Nulls: 0 (0.0%)
+   31. astrometry_quality_flag
+       Type: object | Unique: 3 | Nulls: 1 (0.0%)
+   32. st_teff_missing
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   33. st_lum_missing
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   34. st_mass_missing
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+   35. st_rad_missing
+       Type: bool | Unique: 2 | Nulls: 0 (0.0%)
+
+   NUMERIC STATISTICS (top 5 columns):
+   exolife_star_id:
+     Mean: 2767629119046724096.000 | Std: 1549398963961105408.000
+     Min: 3179036008830848.000 | Max: 6911950900211768320.000
+     25%: 2078127884753956864.000 | 75%: 3578628216305190912.000
+   st_teff:
+     Mean: 5437.724 | Std: 1581.295
+     Min: 2375.000 | Max: 57000.000
+     25%: 4954.750 | 75%: 5924.250
+   st_tefferr1:
+     Mean: 98.201 | Std: 66.685
+     Min: 1.870 | Max: 1763.100
+     25%: 60.000 | 75%: 122.000
+   st_tefferr2:
+     Mean: -100.346 | Std: 77.814
+     Min: -2360.240 | Max: -1.510
+     25%: -128.035 | 75%: -59.320
+   st_met:
+     Mean: 0.020 | Std: 0.182
+     Min: -1.000 | Max: 0.600
+     25%: -0.070 | 75%: 0.130
+
+   CATEGORICAL VALUE DISTRIBUTIONS:
+   st_teff_units:
+     'K': 3,979
+   st_lum_units:
+     'L_sun': 3,979
+   st_mass_units:
+     'M_sun': 3,979
+
+
+📊 EXOLIFE_CATALOG_XMATCH_EDGES.PARQUET
+   ==================================================
+   File size: 52.63 MB
+   Dimensions: 11,059,808 rows × 9 columns
+   Memory usage: 4770.69 MB
+   Duplicated rows: 0
+
+   COLUMNS:
+    1. src_catalog
+       Type: object | Unique: 112 | Nulls: 0 (0.0%)
+    2. src_id
+       Type: object | Unique: 82,878 | Nulls: 0 (0.0%)
+    3. dst_catalog
+       Type: object | Unique: 112 | Nulls: 0 (0.0%)
+    4. dst_id
+       Type: object | Unique: 82,878 | Nulls: 0 (0.0%)
+    5. method
+       Type: object | Unique: 1 | Nulls: 0 (0.0%)
+    6. score
+       Type: object | Unique: 0 | Nulls: 11,059,808 (100.0%)
+    7. sep
+       Type: object | Unique: 0 | Nulls: 11,059,808 (100.0%)
+    8. epoch
+       Type: object | Unique: 0 | Nulls: 11,059,808 (100.0%)
+    9. notes
+       Type: object | Unique: 0 | Nulls: 11,059,808 (100.0%)
+
+   ⚠️  DATA QUALITY CONCERNS:
+   Columns with >50% missing values:
+   - score: 100.0% missing
+   - sep: 100.0% missing
+   - epoch: 100.0% missing
+   - notes: 100.0% missing
+
+   CATEGORICAL VALUE DISTRIBUTIONS:
+   method:
+     'alias': 11,059,808
+   score:
+   sep:
+
+
+CROSS-FILE ANALYSIS
+----------------------------------------
+File sizes (largest to smallest):
+  exolife_catalog_xmatch_edges.parquet: 52.63 MB
+  exolife_catalog.parquet: 5.18 MB
+  exolife_catalog_measurements.parquet: 1.68 MB
+  exolife_catalog_planet_aliases.parquet: 1.18 MB
+  exolife_catalog_planets.parquet: 0.62 MB
+  exolife_catalog_stars.parquet: 0.40 MB
+  exolife_catalog_star_aliases.parquet: 0.19 MB
+
+Record counts (largest to smallest):
+  exolife_catalog_xmatch_edges.parquet: 11,059,808 rows
+  exolife_catalog_measurements.parquet: 322,033 rows
+  exolife_catalog_planet_aliases.parquet: 267,429 rows
+  exolife_catalog_star_aliases.parquet: 11,773 rows
+  exolife_catalog.parquet: 5,983 rows
+  exolife_catalog_planets.parquet: 5,983 rows
+  exolife_catalog_stars.parquet: 3,979 rows
+
+RECOMMENDATIONS & INSIGHTS
+----------------------------------------
+🔍 DATA QUALITY RECOMMENDATIONS:
+   exolife_catalog.parquet:
+     - Review high missing value columns: pl_orbsmaxerr1, pl_orbsmaxerr2, pl_orbinclerr1
+     - And 169 more columns with high null rates
+   exolife_catalog_planets.parquet:
+     - Review high missing value columns: pl_orbsmaxerr1, pl_orbsmaxerr2, pl_orbinclerr1
+     - And 22 more columns with high null rates
+   exolife_catalog_measurements.parquet:
+     - Review high missing value columns: err, units, source
+     - And 3 more columns with high null rates
+   exolife_catalog_stars.parquet:
+     - Review high missing value columns: st_lumerr1, st_lumerr2
+   exolife_catalog_xmatch_edges.parquet:
+     - Review high missing value columns: score, sep, epoch
+     - And 1 more columns with high null rates
+
+⚡ PERFORMANCE RECOMMENDATIONS:
+   exolife_catalog_planet_aliases.parquet (267,429 rows):
+     - Consider partitioning for large datasets
+     - Optimize data types to reduce memory usage
+   exolife_catalog_measurements.parquet (322,033 rows):
+     - Consider partitioning for large datasets
+     - Optimize data types to reduce memory usage
+   exolife_catalog_xmatch_edges.parquet (11,059,808 rows):
+     - Consider partitioning for large datasets
+     - Optimize data types to reduce memory usage
+
+================================================================================
+END OF REPORT
+================================================================================

@@ -1,8 +1,8 @@
-# ExoLife Data Processing Pipeline Configuration
+# ExoLife Data Merging Pipeline Configuration
 # Harmonizes multi-mission astrophysical catalogs with uncertainty propagation
 
-id: "exolife_pipeline"
-name: "ExoLife Data Processing Pipeline"
+id: "exolife_merge_v1"
+name: "ExoLife Data Merging Pipeline"
 description: |
   Ingests and harmonizes multi-mission astrophysical catalogs (NASA Exoplanet Archive, 
   PHL, Gaia, SWEET-Cat) with cross-identification by Gaia source_id and (host, letter);
@@ -46,18 +46,62 @@ sources:
         primary_key: "pl_name"
         foreign_key: "P_NAME"
         tolerance: null
+    - id: "toi_candidates"
+      priority: 4 # Fourth priority (candidate enrichment)
+      precedence_parameters: ["tfopwg_disp", "toi", "sectors", "pl_rade"]
+      cross_match:
+        method: "multiple_identifiers"
+        primary_key: ["ra", "dec"]
+        foreign_key: ["ra", "dec"]
+        tolerance: 3.0 # arcseconds for Gaia DR3 canonical cone search
+        epoch_correction: true # Apply proper motion correction when available
+        canonical_id: "gaia_dr3" # Use Gaia DR3 as canonical reference
+      candidate_enrichment:
+        provides_candidate_status: true
+        provides_vetting_flags: true
+        mission: "TESS"
+        disposition_field: "tfopwg_disp"
+        identifier_field: "tid"
+    - id: "koi_candidates"
+      priority: 5 # Fifth priority (candidate enrichment)
+      precedence_parameters:
+        [
+          "koi_disposition",
+          "koi_pdisposition",
+          "koi_score",
+          "koi_fpflag_nt",
+          "koi_fpflag_ss",
+          "koi_fpflag_co",
+          "koi_fpflag_ec",
+        ]
+      cross_match:
+        method: "multiple_identifiers"
+        primary_key: ["ra", "dec"]
+        foreign_key: ["ra", "dec"]
+        tolerance: 3.0 # arcseconds for Gaia DR3 canonical cone search
+        epoch_correction: true # Apply proper motion correction when available
+        canonical_id: "gaia_dr3" # Use Gaia DR3 as canonical reference
+      candidate_enrichment:
+        provides_candidate_status: true
+        provides_vetting_flags: true
+        mission: "Kepler"
+        disposition_field: "koi_disposition"
+        probability_field: "koi_pdisposition"
+        score_field: "koi_score"
 
-# Cross-Identification Strategy
+# Cross-Identification Strategy - Gaia DR3 Canonical Approach
 cross_identification:
-  # Deterministic precedence rule: Gaia → SWEET-Cat → mission catalogs → archive
+  # Gaia DR3 as canonical ID with cross-matching via proper motion cone searches
+  canonical_reference: "gaia_dr3_astrophysical_parameters"
   conflict_resolution:
-    method: "deterministic_precedence"
-    precedence_order:
-      [
-        "gaia_dr3_astrophysical_parameters",
+    method: "gaia_dr3_canonical_precedence"
+    precedence_order: [
+        "gaia_dr3_astrophysical_parameters", # Canonical reference
         "sweet_cat",
         "phl_exoplanet_catalog",
         "nasa_exoplanet_archive_pscomppars",
+        "toi_candidates",
+        "koi_candidates",
       ]
     parameter_mapping:
       stellar_temperature: ["teff_gspphot", "Teff", "st_teff"] # Gaia → SWEET-Cat → NASA
@@ -65,16 +109,39 @@ cross_identification:
       stellar_radius: ["radius_gspphot", "Radius_t", "st_rad"]
       stellar_logg: ["logg_gspphot", "Logg", "st_logg"]
       stellar_metallicity: ["mh_gspphot", "[Fe/H]", "st_met"]
+    alias_preservation: true # Keep all aliases with provenance
+    uncertainty_propagation: true # Propagate uncertainties through matches
 
   stellar_crossmatch:
     primary_method: "gaia_source_id" # Primary cross-match via Gaia DR3 source_id
-    fallback_method: "coordinate_match" # Fallback to RA/Dec with proper motion
-    coordinate_tolerance: 1.0 # arcseconds
-    proper_motion_correction: true # Re-enabled with proper epoch handling
+    fallback_method: "proper_motion_cone_search" # Cone search with PM correction
+    coordinate_tolerance: 1.0 # arcseconds for primary cone search
+    proper_motion_correction: true # Apply proper motion correction
     epoch_correction: true
     reference_epoch: 2016.0 # Gaia DR3/EDR3 canonical epoch J2016.0
     target_epoch: 2016.0 # Use J2016.0 as internal canonical epoch
     parallax_zero_point_correction: true # Enable parallax ZP correction
+
+  # Enhanced cross-identification for candidate enrichment
+  candidate_crossmatch:
+    method: "multi_tier_identification"
+    tiers:
+      - method: "gaia_source_id"
+        priority: 1
+        tolerance: null
+      - method: "mission_catalog_id" # TIC for TESS, KepID for Kepler
+        priority: 2
+        tolerance: null
+      - method: "2mass_identifier"
+        priority: 3
+        tolerance: null
+      - method: "fuzzy_hostname"
+        priority: 4
+        tolerance: 0.9 # High similarity for candidate matching
+      - method: "coordinate_match"
+        priority: 5
+        tolerance: 3.0 # arcseconds, slightly larger for candidates
+        proper_motion_correction: true
 
   planetary_crossmatch:
     method: "host_letter_pair" # Cross-match planets by (hostname, planet_letter)
@@ -196,6 +263,78 @@ derived_features:
       units: "dimensionless"
       uncertainty_propagation: true
 
+  # Candidate enrichment features
+  candidate_features:
+    - name: "tess_candidate_flag"
+      description: "TESS Objects of Interest candidate flag"
+      source: "toi_candidates"
+      type: "boolean"
+      formula: "tfopwg_disp in ['PC', 'CP', 'APC']" # Planet Candidate, Confirmed Planet, Ambiguous Planet Candidate
+
+    - name: "tess_disposition"
+      description: "TESS Follow-up Working Group disposition"
+      source: "toi_candidates"
+      type: "categorical"
+      mapping:
+        "PC": "Planet Candidate"
+        "CP": "Confirmed Planet"
+        "FP": "False Positive"
+        "APC": "Ambiguous Planet Candidate"
+        "KP": "Known Planet"
+
+    - name: "toi_identifier"
+      description: "TESS Object of Interest ID"
+      source: "toi_candidates"
+      type: "categorical"
+
+    - name: "kepler_candidate_flag"
+      description: "Kepler Objects of Interest candidate flag"
+      source: "koi_candidates"
+      type: "boolean"
+      formula: "koi_disposition == 'CANDIDATE'"
+
+    - name: "kepler_disposition"
+      description: "Kepler candidate disposition"
+      source: "koi_candidates"
+      type: "categorical"
+      mapping:
+        "CANDIDATE": "Planet Candidate"
+        "CONFIRMED": "Confirmed Planet"
+        "FALSE POSITIVE": "False Positive"
+
+    - name: "kepler_false_positive_flags"
+      description: "Kepler false positive flags summary"
+      source: "koi_candidates"
+      type: "composite"
+      components:
+        - "koi_fpflag_nt" # Not Transit-Like
+        - "koi_fpflag_ss" # Stellar Eclipse
+        - "koi_fpflag_co" # Centroid Offset
+        - "koi_fpflag_ec" # Ephemeris Match
+
+    - name: "candidate_validation_score"
+      description: "Composite candidate validation score"
+      type: "derived"
+      formula: |
+        if (tess_candidate_flag and tfopwg_disp in ['PC', 'CP']):
+          base_score = 0.7
+        elif (kepler_candidate_flag and koi_disposition == 'CANDIDATE'):
+          base_score = 0.6
+        else:
+          base_score = 0.0
+
+        # Boost for confirmed planets
+        if (tfopwg_disp == 'CP' or koi_disposition == 'CONFIRMED'):
+          base_score += 0.2
+          
+        # Penalize false positive flags
+        if (kepler_false_positive_flags.sum() > 0):
+          base_score -= 0.2
+          
+        return max(0.0, min(1.0, base_score))
+      units: "dimensionless"
+      uncertainty_propagation: false
+
 # Data Quality and Missingness
 data_quality:
   # Enhanced Gaia-specific quality indicators (comprehensive DR2→DR3)
@@ -245,6 +384,31 @@ data_quality:
         planetary_radius: 0.15
         planetary_mass: 0.20
 
+  # Candidate validation quality indicators
+  candidate_validation:
+    tess_validation:
+      disposition_quality:
+        high_confidence: ["CP", "PC"] # Confirmed Planet, Planet Candidate
+        medium_confidence: ["APC"] # Ambiguous Planet Candidate
+        low_confidence: ["FP"] # False Positive
+      tfopwg_validation:
+        considers_follow_up: true
+        validation_flags: ["tfopwg_disp"]
+      sector_coverage:
+        minimum_sectors: 1
+        quality_boost_multiple_sectors: true
+
+    kepler_validation:
+      disposition_quality:
+        high_confidence: ["CONFIRMED", "CANDIDATE"]
+        low_confidence: ["FALSE POSITIVE"]
+      false_positive_analysis:
+        critical_flags: ["koi_fpflag_nt", "koi_fpflag_ss"] # Not Transit-Like, Stellar Eclipse
+        warning_flags: ["koi_fpflag_co", "koi_fpflag_ec"] # Centroid Offset, Ephemeris Match
+      probabilistic_validation:
+        score_threshold: 0.5 # koi_score
+        disposition_weight: 0.7 # koi_pdisposition
+
   missingness_encoding:
     method: "explicit_indicators"
     patterns:
@@ -264,10 +428,20 @@ data_quality:
         description: "Incomplete orbital characterization"
         columns: ["pl_orbsmax", "pl_orbper", "pl_orbeccen"]
 
+      - name: "missing_candidate_info"
+        description: "No candidate validation data"
+        columns:
+          [
+            "tfopwg_disp",
+            "koi_disposition",
+            "tess_candidate_flag",
+            "kepler_candidate_flag",
+          ]
+
 # Output Configuration
 output:
   format: "parquet"
-  path: "data/processed/exolife_dataset"
+  path: "exolife_catalog"
   filename: "exolife_catalog" # Base filename for output files
   include_uncertainty_samples: false # Store only posterior statistics
   include_provenance: true

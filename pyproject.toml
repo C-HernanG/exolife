@@ -94,8 +94,6 @@ ignore = ["E203", "E501"]
 known-first-party = ["exolife"]
 combine-as-imports = true
 
-
-
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]

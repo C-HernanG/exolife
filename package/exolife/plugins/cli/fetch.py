@@ -8,7 +8,7 @@ import logging
 
 import click
 
-from exolife.data.fetch.fetchers import fetch_manager
+from exolife.data.fetch import fetch_manager
 from exolife.data.utils import list_data_sources
 
 # Configure module-level logger
@@ -95,7 +95,7 @@ def cli(source: str, force: bool, parallel: bool) -> None:
             click.echo(f"Fetching data source: {source}")
 
             try:
-                result_path = fetch_manager._fetch_single_source(source, force=force)
+                result_path = fetch_manager.fetch_source(source, force=force)
 
                 if result_path and result_path.exists():
                     import pandas as pd

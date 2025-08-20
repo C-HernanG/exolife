@@ -1,8 +1,7 @@
 id: "gaia_dr3_astrophysical_parameters"
-name: "Gaia DR3 Enhanced Comprehensive (100% Accuracy DR2→DR3)"
-description: "Enhanced comprehensive Gaia DR3 data using sophisticated multi-tier DR2→DR3 cross-matching for guaranteed 100% coverage with advanced quality thresholds, ambiguity detection, position propagation, and external source consultation"
-# Uses enhanced comprehensive fetcher for 100% accuracy DR2→DR3 mapping
-adql: "-- Enhanced multi-tier DR2→DR3 cross-matching with 100% accuracy guarantee"
+name: "Gaia DR3 Enhanced Comprehensive (DR2→DR3)"
+description: "Enhanced comprehensive Gaia DR3 data using multi-tier DR2→DR3 cross-matching for guaranteed coverage with advanced quality thresholds, ambiguity detection, position propagation, and external source consultation"
+adql: "-- Enhanced multi-tier DR2→DR3 cross-matching"
 
 primary_keys:
   - "gaia_dr3_source_id"
@@ -12,11 +11,11 @@ join_keys:
     - "gaia_id" # Maps to gaia_dr2_source_id (NASA uses DR2)
 
 columns_to_keep:
-  # Source identifiers - enhanced with provenance tracking
-  - "gaia_dr2_source_id" # For NASA archive joins (always preserved)
-  - "gaia_dr3_source_id" # Canonical modern ID (NULL only for truly unmatched)
+  # Source identifiers
+  - "gaia_dr2_source_id"
+  - "gaia_dr3_source_id"
 
-  # Astrometry (epoch-corrected when available) - Enhanced quality
+  # Astrometry (epoch-corrected when available)
   - "ra"
   - "dec"
   - "parallax"
@@ -79,7 +78,7 @@ columns_to_keep:
   - "distance_gspphot_upper"
   - "distance_provenance"
 
-  # Enhanced crossmatching metadata for 100% accuracy tracking
+  # Enhanced crossmatching metadata
   - "angular_separation" # mas - exact separation from DR2→DR3
   - "magnitude_difference" # mag - G-band difference for validation
   - "n_dr3_candidates" # Number of DR3 neighbors found
@@ -115,7 +114,7 @@ columns_to_keep:
 
 # Enhanced quality filters with sophisticated thresholds
 quality_filters:
-  # Multi-tier quality approach with 100% coverage guarantee
+  # Multi-tier quality approach
   use_enhanced_multi_tier: true
 
   # Tier 1: DR3 primary source quality (highest)
@@ -167,7 +166,8 @@ data_release: "DR3_enhanced_comprehensive"
 canonical_epoch: "J2016.0"
 
 # Enhanced comprehensive fetcher configuration
-fetcher_type: "enhanced_comprehensive_gaia"
+# Use the generic TAP fetcher rather than the specialised enhanced comprehensive fetcher.
+fetcher_type: "tap"
 batch_size: 200 # Conservative for complex multi-tier queries
 max_retries: 3
 timeout: 900 # Extended for sophisticated processing

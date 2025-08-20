@@ -154,7 +154,12 @@ def add_hz_edges_to_df(
     """
     # Extract arrays and mask invalid values
     teff = df[teff_col].to_numpy(dtype=float)
-    lum = df[lum_col].to_numpy(dtype=float)
+    lum_raw = df[lum_col].to_numpy(dtype=float)
+    # Convert stellar luminosity to linear units when values are
+    # non‑positive.  Negative or zero luminosities likely represent
+    # log10(L/L_sun); convert to linear (10**x).  Positive values are
+    # assumed to be already in L/L_sun.
+    lum = np.where(lum_raw > 0, lum_raw, 10**lum_raw)
 
     # Compute all limits using vectorized hz_flux
     inner_limit = "RecentVenus" if optimistic else "RunawayGreenhouse"
@@ -385,14 +390,48 @@ def _fetch_adql(ds: "DataSource", gaia_ids: List[int] | None = None) -> bytes:
 # ----------------------------------------------------------------------
 
 
-def read_interim(src: str, cols: List[str] | None = None) -> pd.DataFrame:
+def read_interim(
+    src: str, stage: str = "01_initial_merge", cols: List[str] | None = None
+) -> pd.DataFrame:
     """
     Read an interim data source from the configured directory.
+
+    Args:
+        src: Source filename (without extension)
+        stage: Processing stage folder (e.g., "01_initial_merge", "02_quality_filtered", etc.)
+        cols: Optional list of columns to read
     """
-    path = settings.interim_dir / f"{src}.parquet"
-    if not path.exists():
-        raise FileNotFoundError(path)
-    return pd.read_parquet(path, columns=cols)
+    stage_dir = settings.interim_dir / stage
+    parquet_path = stage_dir / f"{src}.parquet"
+    csv_path = stage_dir / f"{src}.csv"
+
+    if parquet_path.exists():
+        return pd.read_parquet(parquet_path, columns=cols)
+    elif csv_path.exists():
+        df = pd.read_csv(csv_path)
+        if cols:
+            df = df[cols]
+        return df
+    else:
+        raise FileNotFoundError(f"No data found for {src} in stage {stage}")
+
+
+def write_interim(df: pd.DataFrame, src: str, stage: str = "01_initial_merge") -> None:
+    """
+    Write an interim data source to the configured directory.
+
+    Args:
+        df: DataFrame to write
+        src: Source filename (without extension)
+        stage: Processing stage folder
+    """
+    stage_dir = settings.interim_dir / stage
+    stage_dir.mkdir(parents=True, exist_ok=True)
+
+    parquet_path = stage_dir / f"{src}.parquet"
+
+    # Write parquet format only
+    df.to_parquet(parquet_path, index=False)
 
 
 def norm_name(s: pd.Series) -> pd.Series:

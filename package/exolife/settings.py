@@ -5,12 +5,49 @@ Configuration module for ExoLife project paths and environment overrides.
 from pathlib import Path
 from typing import Optional
 
+# Resolve pydantic imports in a way that is compatible with both
+# pydantic v1 and v2.  In pydantic v2 the BaseSettings class was
+# moved to the `pydantic-settings` package and importing it from
+# `pydantic` raises a `PydanticImportError`.  We attempt to import
+# BaseSettings from pydantic-settings first.  If that fails, we fall
+# back to pydantic v1 style imports.  As a last resort we define
+# minimal stubs to allow the package to load even without pydantic.
 try:
-    from pydantic import Field, field_validator
-    from pydantic_settings import BaseSettings
-except ImportError:
-    # Fallback for older pydantic versions
-    from pydantic import BaseSettings, Field, validator as field_validator
+    # Prefer pydantic v2 style separation
+    from pydantic import Field, field_validator  # type: ignore
+    from pydantic_settings import BaseSettings  # type: ignore
+except Exception:
+    try:
+        # pydantic v1 (BaseSettings still in pydantic)
+        from pydantic import (  # type: ignore
+            BaseSettings,
+            Field,
+            validator as field_validator,  # type: ignore
+        )
+    except Exception:
+        # Final fallback: define lightweight stubs so that the module can
+        # still be imported even if pydantic is unavailable.  These
+        # stubs do not provide full validation but satisfy attribute
+        # access in downstream code.
+        class BaseSettings:
+            def __init__(self, **kwargs):
+                for k, v in kwargs.items():
+                    setattr(self, k, v)
+
+        def Field(default=None, default_factory=None, **kwargs):  # type: ignore
+            # Return value produced by default_factory if provided, else the default
+            if default_factory is not None:
+                try:
+                    return default_factory()
+                except Exception:
+                    return default
+            return default
+
+        def field_validator(*args, **kwargs):  # type: ignore
+            def decorator(fn):
+                return fn
+
+            return decorator
 
 
 class Settings(BaseSettings):
@@ -102,7 +139,24 @@ class Settings(BaseSettings):
         return v or data_dir / "processed"
 
     def create_directories(self) -> None:
-        """Create all data directories if they don't exist."""
+        """
+        Create all data directories if they don't exist.  This method also
+        synthesises missing directory fields when pydantic validation has
+        not run (e.g., when BaseSettings is a stub).  If any of the
+        directory attributes are ``None``, they will be constructed
+        relative to ``root_dir``.
+        """
+        # Synthesize base data directory if absent
+        if not getattr(self, "data_dir", None):
+            self.data_dir = self.root_dir / "data"
+        # Derive raw, interim and processed directories if absent
+        if not getattr(self, "raw_dir", None):
+            self.raw_dir = self.data_dir / "raw"
+        if not getattr(self, "interim_dir", None):
+            self.interim_dir = self.data_dir / "interim"
+        if not getattr(self, "processed_dir", None):
+            self.processed_dir = self.data_dir / "processed"
+
         directories = [
             self.data_dir,
             self.raw_dir,
@@ -111,7 +165,7 @@ class Settings(BaseSettings):
         ]
         for directory in directories:
             if directory:
-                directory.mkdir(parents=True, exist_ok=True)
+                Path(directory).mkdir(parents=True, exist_ok=True)
 
 
 settings = Settings()

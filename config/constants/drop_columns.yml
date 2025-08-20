@@ -1,6 +1,4 @@
-# Columns to Drop Configuration
-# Defines columns that should be removed during data processing
-
+# Columns to drop during data processing
 columns_to_drop:
   - P_NAME
   - S_NAME

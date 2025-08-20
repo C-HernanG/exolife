@@ -38,41 +38,105 @@ def data_status():
     # Check raw data
     click.echo("\nRaw Data:")
     if settings.raw_dir.exists():
-        for raw_file in settings.raw_dir.glob("*.parquet"):
-            try:
-                df = pd.read_parquet(raw_file)
-                source_id = raw_file.stem
-                click.echo(f"  ✓ {source_id}: {len(df)} rows")
-            except Exception:
-                click.echo(f"  ⚠ {raw_file.name}: file exists but corrupted")
+        for source_dir in settings.raw_dir.iterdir():
+            if source_dir.is_dir():
+                parquet_file = source_dir / f"{source_dir.name}.parquet"
+                csv_file = source_dir / f"{source_dir.name}.csv"
+
+                if parquet_file.exists():
+                    try:
+                        df = pd.read_parquet(parquet_file)
+                        click.echo(f"  ✓ {source_dir.name}: {len(df)} rows (parquet)")
+                        if csv_file.exists():
+                            click.echo("    + CSV version available")
+                    except Exception:
+                        click.echo(f"  ⚠ {source_dir.name}: parquet corrupted")
+                elif csv_file.exists():
+                    try:
+                        df = pd.read_csv(csv_file)
+                        click.echo(f"  ✓ {source_dir.name}: {len(df)} rows (csv only)")
+                    except Exception:
+                        click.echo(f"  ⚠ {source_dir.name}: csv corrupted")
+                else:
+                    click.echo(f"  ⚠ {source_dir.name}: no data files found")
     else:
         click.echo("  No raw data directory found")
 
-    # Check merged data
-    merged_dir = settings.merged_dir / "parquet"
-    click.echo("\nMerged Data:")
-    if merged_dir.exists():
-        for merged_file in merged_dir.glob("*.parquet"):
-            try:
-                df = pd.read_parquet(merged_file)
-                strategy_name = merged_file.stem
-                click.echo(f"  ✓ {strategy_name}: {len(df)} rows")
-            except Exception:
-                click.echo(f"  ⚠ {merged_file.name}: corrupted")
+    # Check interim data (staged processing)
+    click.echo("\nInterim Data (Processing Stages):")
+    if settings.interim_dir.exists():
+        for stage_dir in settings.interim_dir.iterdir():
+            if stage_dir.is_dir():
+                click.echo(f"\n  Stage: {stage_dir.name}")
+
+                parquet_files = list(stage_dir.glob("*.parquet"))
+                csv_files = list(stage_dir.glob("*.csv"))
+
+                if parquet_files or csv_files:
+                    for parquet_file in parquet_files:
+                        try:
+                            df = pd.read_parquet(parquet_file)
+                            click.echo(
+                                f"    ✓ {parquet_file.stem}: {len(df)} rows (parquet)"
+                            )
+                        except Exception:
+                            click.echo(f"    ⚠ {parquet_file.name}: parquet corrupted")
+
+                    csv_only = [
+                        f
+                        for f in csv_files
+                        if not (stage_dir / f"{f.stem}.parquet").exists()
+                    ]
+                    for csv_file in csv_only:
+                        try:
+                            df = pd.read_csv(csv_file)
+                            click.echo(
+                                f"    ✓ {csv_file.stem}: {len(df)} rows (csv only)"
+                            )
+                        except Exception:
+                            click.echo(f"    ⚠ {csv_file.name}: csv corrupted")
+                else:
+                    click.echo("    (empty)")
     else:
-        click.echo("  No merged data directory found")
+        click.echo("  No interim data directory found")
 
     # Check processed data
-    processed_dir = settings.processed_dir / "parquet"
     click.echo("\nProcessed Data:")
-    if processed_dir.exists():
-        for processed_file in processed_dir.glob("*.parquet"):
-            try:
-                df = pd.read_parquet(processed_file)
-                pipeline_name = processed_file.stem
-                click.echo(f"  ✓ {pipeline_name}: {len(df)} rows")
-            except Exception:
-                click.echo(f"  ⚠ {processed_file.name}: corrupted")
+    if settings.processed_dir.exists():
+        for dataset_dir in settings.processed_dir.iterdir():
+            if dataset_dir.is_dir():
+                click.echo(f"\n  Dataset: {dataset_dir.name}")
+
+                parquet_files = list(dataset_dir.glob("*.parquet"))
+                csv_files = list(dataset_dir.glob("*.csv"))
+
+                if parquet_files:
+                    for parquet_file in parquet_files:
+                        try:
+                            df = pd.read_parquet(parquet_file)
+                            click.echo(
+                                f"    ✓ {parquet_file.stem}: {len(df)} rows (parquet)"
+                            )
+                        except Exception:
+                            click.echo(f"    ⚠ {parquet_file.name}: parquet corrupted")
+
+                if csv_files:
+                    csv_only = [
+                        f
+                        for f in csv_files
+                        if not (dataset_dir / f"{f.stem}.parquet").exists()
+                    ]
+                    for csv_file in csv_only:
+                        try:
+                            df = pd.read_csv(csv_file)
+                            click.echo(
+                                f"    ✓ {csv_file.stem}: {len(df)} rows (csv only)"
+                            )
+                        except Exception:
+                            click.echo(f"    ⚠ {csv_file.name}: csv corrupted")
+
+                if not parquet_files and not csv_files:
+                    click.echo(f"    ⚠ {dataset_dir.name}: no data files found")
     else:
         click.echo("  No processed data directory found")
 
@@ -209,21 +273,49 @@ def validate_sources():
     for source_id in available_sources:
         click.echo(f"\nValidating: {source_id}")
 
-        raw_file = settings.raw_dir / f"{source_id}.parquet"
+        source_dir = settings.raw_dir / source_id
+        raw_file = source_dir / f"{source_id}.parquet"
+        csv_file = source_dir / f"{source_id}.csv"
+
         if raw_file.exists():
             try:
                 import pandas as pd
 
                 df = pd.read_parquet(raw_file)
                 click.echo(
-                    f"  ✓ Raw data exists: {len(df)} rows, {len(df.columns)} columns"
+                    f"  ✓ Raw data exists: {len(df)} rows, {len(df.columns)} columns (parquet)"
+                )
+                if csv_file.exists():
+                    click.echo("    + CSV version available")
+                valid_count += 1
+            except Exception as e:
+                click.echo(f"  ⚠ Raw parquet data corrupted: {e}")
+                if csv_file.exists():
+                    try:
+                        df = pd.read_csv(csv_file)
+                        click.echo(
+                            f"  ✓ Raw CSV data exists: {len(df)} rows, {len(df.columns)} columns"
+                        )
+                        valid_count += 1
+                    except Exception as csv_e:
+                        click.echo(f"  ⚠ Raw CSV data also corrupted: {csv_e}")
+                        continue
+                else:
+                    continue
+        elif csv_file.exists():
+            try:
+                import pandas as pd
+
+                df = pd.read_csv(csv_file)
+                click.echo(
+                    f"  ✓ Raw CSV data exists: {len(df)} rows, {len(df.columns)} columns"
                 )
                 valid_count += 1
             except Exception as e:
-                click.echo(f"  ⚠ Raw data exists but corrupted: {e}")
+                click.echo(f"  ⚠ Raw CSV data corrupted: {e}")
                 continue
         else:
-            click.echo(f"  ⚠ Raw data not found: {raw_file}")
+            click.echo(f"  ⚠ Raw data not found in: {source_dir}")
 
         click.echo("  ✓ Configuration valid")
 

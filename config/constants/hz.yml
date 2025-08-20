@@ -1,6 +1,4 @@
-# Kopparapu Habitable Zone Coefficients
-# Reference: Kopparapu et al. (2013, 2014)
-
+# Kopparapu Habitable Zone Coefficients (Kopparapu et al. 2013, 2014)
 RecentVenus:
   - 1.776
   - 2.136e-4

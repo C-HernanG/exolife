@@ -8,8 +8,7 @@ import logging
 
 import click
 
-from exolife.data.merge.merge_factory import merge_factory
-from exolife.data.merge.mergers import merge_manager
+from exolife.data.merge import get_available_strategies, get_merger_info, merge_data
 
 # Configure module-level logger
 logger = logging.getLogger("exolife.cli.merge")
@@ -18,113 +17,125 @@ logger = logging.getLogger("exolife.cli.merge")
 @click.command("merge")
 @click.argument("method", type=click.STRING, required=False)
 @click.option("--force", is_flag=True, help="Force refresh of merged data")
-def cli(method: str, force: bool) -> None:
+@click.option(
+    "--list-strategies", is_flag=True, help="List all available merge strategies"
+)
+@click.option("--info", is_flag=True, help="Show detailed information about mergers")
+def cli(method: str, force: bool, list_strategies: bool, info: bool) -> None:
     """
-    Execute data ingestion using the unified pipeline.
+    Execute data merging using the modular merge system.
 
     Args:
-        method: Ingestion method (all methods now use unified_ingestion).
+        method: Merge strategy to use (e.g., 'exolife_merge_v1', 'gaia_source_id')
         Run without method to see available options.
 
-    Note: ExoLife now uses a single unified ingestion pipeline that:
-    - Cross-identifies sources via Gaia source_id and (host, letter)
-    - Propagates uncertainties via Monte Carlo sampling
-    - Derives features with uncertainty quantification
-    - Maintains data provenance and quality indicators
+    The ExoLife merge system provides multiple strategies:
+    - Individual mergers: gaia_source_id, exact_name, coordinate_match
+    - Catalog-specific: exoplanet_catalog, candidate_validation
+    - Pipeline mergers: exolife_merge_v1 (full pipeline)
 
     For complex workflows, use the DAG system:
         exolife dag run config/dags/dagspec.yaml
     """
-    # Get available strategies dynamically from merge factory
-    available = merge_factory.get_available_strategies()
+
+    # Handle info display options
+    if list_strategies:
+        available = get_available_strategies()
+        click.echo("Available merge strategies:")
+        click.echo("=" * 40)
+        for strategy in sorted(available):
+            click.echo(f"  • {strategy}")
+        return
+
+    if info:
+        merger_info = get_merger_info()
+        click.echo("ExoLife Merge System Information")
+        click.echo("=" * 40)
+        for merger_name, details in merger_info.items():
+            click.echo(f"\n{details['name']} ({merger_name}):")
+            click.echo(f"  Strategies: {', '.join(details['strategies'])}")
+            click.echo(f"  Description: {details['description'][:100]}...")
+        return
+
+    # Get available strategies dynamically
+    available = get_available_strategies()
 
     # If no method specified, show available options
     if not method:
-        click.echo("ExoLife Unified Ingestion Pipeline")
-        click.echo("=" * 40)
+        click.echo("ExoLife Merge System")
+        click.echo("=" * 30)
         click.echo()
-        click.echo("Available methods (all use unified_ingestion):")
-        for strategy in sorted(available):
-            if strategy == "unified_ingestion":
-                click.echo(f"  ✓ {strategy} (recommended)")
-            else:
-                click.echo(f"  - {strategy} (legacy alias)")
+        click.echo("Available strategies:")
+
+        # Group strategies by merger type
+        merger_info = get_merger_info()
+        for merger_name, details in merger_info.items():
+            click.echo(f"\n{details['name']}:")
+            for strategy in details["strategies"]:
+                if strategy == "exolife_merge_v1":
+                    click.echo(f"  ✓ {strategy} (recommended full pipeline)")
+                else:
+                    click.echo(f"  • {strategy}")
+
         click.echo()
-        click.echo("The unified pipeline harmonizes multi-mission catalogs with:")
-        click.echo("• Cross-identification via Gaia source_id and (host, letter)")
-        click.echo("• Unit standardization across all sources")
-        click.echo("• Monte Carlo uncertainty propagation (N=1000)")
-        click.echo(
-            "• Derived features: stellar flux, Teq, surface gravity, HZ distances"
-        )
-        click.echo("• Explicit missingness encoding")
-        click.echo("• Data provenance tracking")
-        click.echo()
-        click.echo(
-            "💡 Tip: For complete workflows with validation, use the DAG system:"
-        )
-        click.echo("   exolife dag run config/dags/dagspec.yaml")
+        click.echo("Example usage:")
+        click.echo("  exolife merge exolife_merge_v1        # Full pipeline")
+        click.echo("  exolife merge gaia_source_id          # Gaia ID matching only")
+        click.echo("  exolife merge --list-strategies       # List all strategies")
+        click.echo("  exolife merge --info                  # Detailed merger info")
         return
 
-    # Validate method (all methods now map to unified_ingestion)
+    # Validate method
     if method not in available:
         logger.error(
-            "Unknown ingestion method '%s'; available options: %s",
+            "Unknown merge strategy '%s'; available options: %s",
             method,
             ", ".join(sorted(available)),
         )
         click.echo(
-            f"Error: Unknown method '{method}'.\n"
-            f"Available: {', '.join(sorted(available))}"
+            f"Error: Unknown strategy '{method}'.\n"
+            f"Use --list-strategies to see available options."
         )
         raise click.Abort()
 
-    # Perform ingestion operation
+    # Perform merge operation
     try:
-        logger.info("Running unified ingestion with method '%s'...", method)
-        click.echo("Running ExoLife unified ingestion pipeline...")
+        logger.info("Running merge with strategy '%s'...", method)
+        click.echo(f"Running merge with strategy: {method}")
 
-        if method != "unified_ingestion":
-            click.echo(f"Note: '{method}' now maps to the unified ingestion pipeline")
+        # Use the new merge system
+        merger = merge_data(
+            strategy=method,
+            output_name="exolife_catalog",
+            sources=[],  # Will be loaded from config for pipeline strategies
+            drop_duplicates=True,
+        )
 
-        # Use merge manager which handles the unified strategy
-        result = merge_manager.merge_data(method, overwrite=force)
+        # Get the result
+        result = merger.merge()
 
-        if hasattr(result, "__len__"):
-            click.echo(f"✓ Ingestion completed: {len(result)} records processed")
+        if result.success:
+            click.echo(f"✓ Merge completed: {result.rows_processed} records processed")
+            click.echo(f"  Output: {result.output_path}")
 
-            # Show some statistics if available
-            if "data_completeness_score" in result.columns:
-                avg_completeness = result["data_completeness_score"].mean()
-                click.echo(f"  • Average data completeness: {avg_completeness:.2%}")
+            if result.execution_time_seconds:
+                click.echo(f"  Time: {result.execution_time_seconds:.2f}s")
 
-            if any("hz_" in col for col in result.columns):
-                hz_coverage = result.filter(regex=r"hz_.*").notna().any(axis=1).sum()
-                click.echo(f"  • Records with HZ data: {hz_coverage}")
+            if result.statistics:
+                stats = result.statistics
+                if "merge_efficiency" in stats:
+                    click.echo(f"  Efficiency: {stats['merge_efficiency']:.2%}")
 
-            derived_features = len(
-                [
-                    col
-                    for col in result.columns
-                    if any(
-                        prefix in col
-                        for prefix in [
-                            "stellar_flux",
-                            "equilibrium_temp",
-                            "surface_gravity",
-                            "escape_velocity",
-                        ]
-                    )
-                ]
-            )
-            if derived_features > 0:
-                click.echo(f"  • Derived features added: {derived_features}")
+                if "input_sources" in stats:
+                    sources_count = len(stats["input_sources"])
+                    click.echo(f"  Sources merged: {sources_count}")
         else:
-            click.echo("✓ Ingestion completed successfully")
+            click.echo(f"✗ Merge failed: {result.error_message}")
+            raise click.Abort()
 
-        logger.info("Unified ingestion completed successfully.")
+        logger.info("Merge completed successfully.")
 
     except Exception as exc:
-        logger.exception("Ingestion operation failed: %s", exc)
-        click.echo(f"✗ Ingestion failed: {exc}")
+        logger.exception("Merge operation failed: %s", exc)
+        click.echo(f"✗ Merge failed: {exc}")
         raise click.Abort()

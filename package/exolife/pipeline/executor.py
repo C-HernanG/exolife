@@ -1,8 +1,14 @@
 """
 DAG Executor for running pipeline workflows.
 
-This module provides execution engines for running DAG-defined workflows
-with support for parallel execution, error handling, and progress tracking.
+This module provides execution engines for running DAG-define        else:
+            result = pd.read_csv(merge_result.output_path)
+
+                # Save as parquet
+        parquet_path = stage_dir / f"merged_{strategy}.parquet"
+        result.to_parquet(parquet_path, index=False)
+
+        return resultwith support for parallel execution, error handling, and progress tracking.
 """
 
 import logging
@@ -75,7 +81,7 @@ class DataPipelineTaskExecutor(TaskExecutor):
         """
         Execute a data fetch task.
         """
-        from exolife.data.fetch.fetchers import fetch_manager
+        from exolife.data.fetch import fetch_manager
 
         source = task.config.get("source")
         force = task.config.get("force_refresh", False)
@@ -83,7 +89,7 @@ class DataPipelineTaskExecutor(TaskExecutor):
         if not source:
             raise ValueError("Fetch task requires 'source' in config")
 
-        result = fetch_manager._fetch_single_source(source, force=force)
+        result = fetch_manager.fetch_source(source, force=force)
         return {"source": source, "success": True, "path": str(result)}
 
     def _execute_merge_task(self, task: TaskNode) -> Any:
@@ -95,21 +101,32 @@ class DataPipelineTaskExecutor(TaskExecutor):
         strategy = task.config.get("strategy", "baseline")
 
         logger.info(f"Merging data with strategy: {strategy}")
-        result = merge_data(strategy)
 
-        # Save merged data to interim directory for next steps
-        cache_dir = settings.interim_dir
-        cache_dir.mkdir(parents=True, exist_ok=True)
+        # The merge_data function in mergers returns a merger instance
+        merger = merge_data(strategy, overwrite=True)
+        merge_result = merger.merge()
 
-        output_path = cache_dir / f"merged_{strategy}.parquet"
-        result.to_parquet(output_path)
-        logger.info(f"Saved merged data to {output_path}")
+        if not merge_result.success:
+            raise RuntimeError(f"Merge failed: {merge_result.error_message}")
+
+        # Load the result DataFrame from the output path (already saved by merger)
+        import pandas as pd
+
+        if merge_result.output_path.suffix == ".parquet":
+            result = pd.read_parquet(merge_result.output_path)
+        else:
+            result = pd.read_csv(merge_result.output_path)
+
+        # The data is already saved to interim by the merger, no need to save again
+        logger.info(
+            f"Merge completed, data already saved to {merge_result.output_path}"
+        )
 
         return {
             "strategy": strategy,
             "rows": len(result),
             "columns": len(result.columns),
-            "output_path": str(output_path),
+            "output_path": str(merge_result.output_path),
         }
 
     def _execute_preprocess_task(self, task: TaskNode) -> Any:
@@ -124,13 +141,25 @@ class DataPipelineTaskExecutor(TaskExecutor):
         if not preprocessor_name:
             raise ValueError("Preprocess task requires 'preprocessor' in config")
 
-        # Load data from previous step using interim directory
-        cache_dir = settings.interim_dir
+        # Load data from previous step using interim directory stages
+        # Check stages in order: 03_feature_engineered -> 02_quality_filtered -> 01_initial_merge
+        stage_dirs = [
+            "03_feature_engineered",
+            "02_quality_filtered",
+            "01_initial_merge",
+        ]
+        data_files = []
 
-        # Find the most recent data file (could be from merge or previous preprocess)
-        data_files = list(cache_dir.glob("*.parquet"))
+        for stage in stage_dirs:
+            stage_dir = settings.interim_dir / stage
+            if stage_dir.exists():
+                stage_files = list(stage_dir.glob("*.parquet"))
+                if stage_files:
+                    data_files = stage_files
+                    break
+
         if not data_files:
-            raise ValueError("No data files found in interim directory")
+            raise ValueError("No data files found in interim directory stages")
 
         # Load the most recent file (for now, use a simple heuristic)
         latest_file = max(data_files, key=lambda p: p.stat().st_mtime)
@@ -144,9 +173,27 @@ class DataPipelineTaskExecutor(TaskExecutor):
 
         processed_data = preprocessor.process(data)
 
-        # Save processed data to interim directory
-        output_path = cache_dir / f"processed_{preprocessor_name.lower()}.parquet"
-        processed_data.to_parquet(output_path)
+        # Save processed data to appropriate interim stage
+        # Quality filters go to stage 02, feature engineering to stage 03
+        if (
+            "quality" in preprocessor_name.lower()
+            or "filter" in preprocessor_name.lower()
+        ):
+            output_stage = "02_quality_filtered"
+        elif (
+            "feature" in preprocessor_name.lower()
+            or "engineering" in preprocessor_name.lower()
+        ):
+            output_stage = "03_feature_engineered"
+        else:
+            output_stage = "02_quality_filtered"  # Default for other preprocessing
+
+        output_dir = settings.interim_dir / output_stage
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        output_path = output_dir / f"processed_{preprocessor_name.lower()}.parquet"
+
+        processed_data.to_parquet(output_path, index=False)
         logger.info(f"Saved processed data to {output_path}")
 
         return {
@@ -173,9 +220,28 @@ class DataPipelineTaskExecutor(TaskExecutor):
 
         logger.info(f"Running validation checks: {checks}")
 
-        # Load data for validation from interim directory
-        cache_dir = settings.interim_dir
-        data_files = list(cache_dir.glob("*.parquet"))
+        # Load data for validation from interim directory stages
+        # Check stages in order: 03_feature_engineered -> 02_quality_filtered -> 01_initial_merge
+        stage_dirs = [
+            "03_feature_engineered",
+            "02_quality_filtered",
+            "01_initial_merge",
+        ]
+        data_files = []
+
+        logger.info(f"Looking for data files in interim_dir: {settings.interim_dir}")
+
+        for stage in stage_dirs:
+            stage_dir = settings.interim_dir / stage
+            logger.info(
+                f"Checking stage directory: {stage_dir} (exists: {stage_dir.exists()})"
+            )
+            if stage_dir.exists():
+                stage_files = list(stage_dir.glob("*.parquet"))
+                logger.info(f"Found {len(stage_files)} parquet files in {stage}")
+                if stage_files:
+                    data_files = stage_files
+                    break
 
         if data_files:
             # Validate the most recent data file
@@ -244,12 +310,28 @@ class DataPipelineTaskExecutor(TaskExecutor):
         output_dir = settings.processed_dir / output_path
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        # Load the final processed data from interim directory
-        cache_dir = settings.interim_dir
-        data_files = list(cache_dir.glob("*.parquet"))
+        # Load the final processed data from interim directory stages
+        # Check stages in order: 04_normalized -> 03_feature_engineered -> 02_quality_filtered -> 01_initial_merge
+        stage_dirs = [
+            "04_normalized",
+            "03_feature_engineered",
+            "02_quality_filtered",
+            "01_initial_merge",
+        ]
+        data_files = []
+
+        for stage in stage_dirs:
+            stage_dir = settings.interim_dir / stage
+            if stage_dir.exists():
+                stage_files = list(stage_dir.glob("*.parquet"))
+                if stage_files:
+                    data_files = stage_files
+                    break
 
         if not data_files:
-            raise ValueError("No data files found in interim directory for export")
+            raise ValueError(
+                "No data files found in interim directory stages for export"
+            )
 
         # Load the most recent data file
         latest_file = max(data_files, key=lambda p: p.stat().st_mtime)

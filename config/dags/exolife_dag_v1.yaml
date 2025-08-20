@@ -45,6 +45,30 @@ tasks:
     timeout: 300
     on_failure: "fail"
 
+  # TOI candidate data fetch
+  fetch_toi_candidates:
+    task_type: "fetch"
+    config:
+      source: "toi_candidates"
+      force_refresh: false
+    dependencies: []
+    retries: 2
+    timeout: 300
+    on_failure: "warn" # Continue pipeline even if TOI fetch fails
+    description: "Fetch TESS Objects of Interest candidates for stellar enrichment"
+
+  # KOI candidate data fetch
+  fetch_koi_candidates:
+    task_type: "fetch"
+    config:
+      source: "koi_candidates"
+      force_refresh: false
+    dependencies: []
+    retries: 2
+    timeout: 300
+    on_failure: "warn" # Continue pipeline even if KOI fetch fails
+    description: "Fetch Kepler Objects of Interest candidates for stellar enrichment"
+
   # Data validation task (depends on all fetch tasks)
   validate_raw_data:
     task_type: "validate"
@@ -57,6 +81,8 @@ tasks:
       - "fetch_phl_data"
       - "fetch_enhanced_gaia_data" # Uses enhanced comprehensive Gaia data
       - "fetch_sweet_cat"
+      - "fetch_toi_candidates"
+      - "fetch_koi_candidates"
     retries: 1
     timeout: 120
     on_failure: "fail"
@@ -69,11 +95,13 @@ tasks:
       cross_identification: true
       uncertainty_propagation: true
       monte_carlo_samples: 1000
+      candidate_enrichment: true # Enable TOI/KOI candidate enrichment
     dependencies:
       - "validate_raw_data"
     retries: 2
-    timeout: 1200 # Longer timeout for comprehensive processing
+    timeout: 1800 # Extended timeout for candidate processing
     on_failure: "fail"
+    description: "Unified ingestion with TOI/KOI candidate enrichment via host identifiers"
 
   # Quality assessment of unified catalog
   assess_unified_quality:
@@ -82,19 +110,21 @@ tasks:
       check_completeness: true
       check_derived_features: true
       check_uncertainty_propagation: true
+      check_candidate_enrichment: true # Validate TOI/KOI enrichment
       min_hz_coverage: 0.5
+      min_candidate_coverage: 0.1 # At least 10% should have candidate info
     dependencies:
       - "unified_ingestion"
     retries: 1
-    timeout: 180
+    timeout: 240 # Extended for candidate validation
     on_failure: "fail"
 
   # Final export of processed catalog
   export_final_catalog:
     task_type: "export"
     config:
-      formats: ["parquet", "csv"]
-      output_path: "exolife_dataset" # Use same directory as main pipeline
+      formats: ["parquet"]
+      output_path: "exolife_catalog" # Use new directory structure
       filename: "exolife_catalog" # Use single consistent filename
       include_metadata: true
       include_provenance: true

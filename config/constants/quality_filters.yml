@@ -1,6 +1,4 @@
-# Quality Filters Configuration
-# Defines data quality criteria and filtering rules
-
+# Data quality criteria and filtering rules
 min_required_columns:
   - pl_name
   - pl_orbsmax

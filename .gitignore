@@ -40,6 +40,7 @@ env/
 
 # Pytest cache
 .cache/
+.pytest_cache/
 
 # Coverage reports
 .coverage
@@ -64,6 +65,7 @@ pyrightconfig.json
 
 # Pylint
 pylint-report.txt
+.ruff_cache/
 
 # Unit test / test output
 test-output/

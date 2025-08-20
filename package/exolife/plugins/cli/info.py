@@ -11,7 +11,7 @@ from importlib.metadata import PackageNotFoundError, version
 import click
 
 from exolife.data.fetch import get_fetcher_info
-from exolife.data.merge.merge_factory import get_merge_strategy_info
+from exolife.data.merge import get_merger_info
 from exolife.data.preprocess import get_preprocessor_info
 
 # Configure module-level logger
@@ -47,9 +47,11 @@ def cli() -> None:
     # List available merge strategies
     click.echo("\nAvailable merge strategies:")
     try:
-        merge_info = get_merge_strategy_info()
-        for strategy_name, description in merge_info.items():
-            click.echo(f"  - {strategy_name}: {description}")
+        merger_info = get_merger_info()
+        for merger_name, details in merger_info.items():
+            click.echo(f"  {details['name']}:")
+            for strategy in details["strategies"]:
+                click.echo(f"    - {strategy}")
     except Exception as e:
         click.echo(f"  Error loading merge strategies: {e}")
 

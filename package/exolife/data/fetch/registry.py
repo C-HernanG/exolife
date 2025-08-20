@@ -1,5 +1,8 @@
 """
-Scalable fetcher factory with automatic registration and extensibility.
+Simplified and scalable fetcher factory with clean registry pattern.
+
+This module provides a streamlined approach to fetcher registration and creation,
+focusing on simplicity, testability, and easy extensibility.
 """
 
 import logging
@@ -12,8 +15,10 @@ logger = logging.getLogger(__name__)
 
 class FetcherRegistry:
     """
-    Registry for fetcher classes with automatic registration support.
-    Designed for maximum scalability and easy extension.
+    Simplified registry for fetcher classes with automatic registration.
+
+    Provides a clean, extensible pattern for managing different types
+    of data fetchers with minimal complexity.
     """
 
     _fetchers: Dict[str, Type[BaseFetcher]] = {}
@@ -47,29 +52,9 @@ class FetcherRegistry:
         logger.debug(f"Registered fetcher: {fetcher_type} -> {fetcher_class.__name__}")
 
     @classmethod
-    def unregister(cls, fetcher_type: str) -> None:
-        """
-        Remove a fetcher from the registry.
-        """
-        if fetcher_type in cls._fetchers:
-            del cls._fetchers[fetcher_type]
-            logger.debug(f"Unregistered fetcher: {fetcher_type}")
-
-    @classmethod
     def get_available_types(cls) -> List[str]:
-        """
-        Get list of all registered fetcher types.
-        """
+        """Get list of all registered fetcher types."""
         return list(cls._fetchers.keys())
-
-    @classmethod
-    def get_fetcher_class(cls, fetcher_type: str) -> Type[BaseFetcher]:
-        """
-        Get a specific fetcher class by type.
-        """
-        if fetcher_type not in cls._fetchers:
-            raise ValueError(f"Unknown fetcher type: {fetcher_type}")
-        return cls._fetchers[fetcher_type]
 
     @classmethod
     def create_fetcher(
@@ -86,36 +71,21 @@ class FetcherRegistry:
             Configured fetcher instance
         """
         # If specific type requested, use it
-        if fetcher_type:
-            fetcher_class = cls.get_fetcher_class(fetcher_type)
+        if fetcher_type and fetcher_type in cls._fetchers:
+            fetcher_class = cls._fetchers[fetcher_type]
             return fetcher_class(config)
 
-        # Check for enhanced comprehensive GAIA fetcher
-        if getattr(config, "fetcher_type", None) == "enhanced_comprehensive_gaia":
-            from .gaia_comprehensive_fetcher import EnhancedGaiaComprehensiveFetcher
-
-            return EnhancedGaiaComprehensiveFetcher()
-
-        # Legacy enhanced crossmatch fetcher (kept for compatibility)
-        if getattr(config, "fetcher_type", None) == "enhanced_crossmatch":
-            try:
-                from .enhanced_gaia_crossmatch import EnhancedGaiaCrossmatch
-
-                return EnhancedGaiaCrossmatch()
-            except ImportError:
-                logger.warning(
-                    "Enhanced crossmatch fetcher not available, using comprehensive fetcher"
-                )
-                from .gaia_comprehensive_fetcher import EnhancedGaiaComprehensiveFetcher
-
-                return EnhancedGaiaComprehensiveFetcher()
-
-        # Try to find the best fetcher by asking each one if it can handle the config
+        # Auto-detect compatible fetcher with priority
         compatible_fetchers = []
         for ftype, fetcher_class in cls._fetchers.items():
-            temp_fetcher = fetcher_class(config)
-            if temp_fetcher.can_handle(config):
-                compatible_fetchers.append((ftype, fetcher_class))
+            try:
+                temp_fetcher = fetcher_class(config)
+                if temp_fetcher.can_handle(config):
+                    compatible_fetchers.append((ftype, fetcher_class))
+            except Exception as e:
+                logger.debug(
+                    f"Fetcher {fetcher_class.__name__} failed compatibility check: {e}"
+                )
 
         if not compatible_fetchers:
             # Fall back to default fetcher if available
@@ -124,16 +94,20 @@ class FetcherRegistry:
                 return cls._default_fetcher(config)
             raise ValueError(f"No compatible fetcher found for source: {config.id}")
 
-        # Use the first compatible fetcher (could add priority logic here)
+        # Sort fetchers by priority (specialized fetchers first)
+        priority_order = ["gaia", "tap", "http"]
+        compatible_fetchers.sort(
+            key=lambda x: priority_order.index(x[0]) if x[0] in priority_order else 999
+        )
+
+        # Use the highest priority compatible fetcher
         fetcher_type, fetcher_class = compatible_fetchers[0]
         logger.debug(f"Using {fetcher_class.__name__} for source {config.id}")
         return fetcher_class(config)
 
     @classmethod
     def get_info(cls) -> Dict[str, str]:
-        """
-        Get information about all registered fetchers.
-        """
+        """Get information about all registered fetchers."""
         info = {}
         for fetcher_type, fetcher_class in cls._fetchers.items():
             default_marker = (
@@ -173,7 +147,7 @@ def register_fetcher(
         return decorator
 
 
-def get_fetcher(
+def create_fetcher(
     config: DataSourceConfig, fetcher_type: Optional[str] = None
 ) -> BaseFetcher:
     """
@@ -185,14 +159,10 @@ def get_fetcher(
 
 
 def list_fetcher_types() -> List[str]:
-    """
-    List all available fetcher types.
-    """
+    """List all available fetcher types."""
     return FetcherRegistry.get_available_types()
 
 
 def get_fetcher_info() -> Dict[str, str]:
-    """
-    Get information about all available fetchers.
-    """
+    """Get information about all available fetchers."""
     return FetcherRegistry.get_info()
