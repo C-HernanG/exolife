@@ -1,0 +1,27 @@
+{
+  // Visual Studio Code Dev Container configuration for ExoLife.
+  // This file instructs VS Code to use the docker-compose setup
+  // defined in `compose.yaml` and attach to the `exolife-dev` service
+  // when opening the project in a containerised development
+  // environment.  It automatically installs useful Python
+  // extensions and configures the default interpreter path.
+  "name": "ExoLife Dev",
+  "dockerComposeFile": ["../compose.yaml"],
+  "service": "exolife-dev",
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-toolsai.jupyter",
+        "ms-azuretools.vscode-docker",
+        "tamasfe.even-better-toml",
+        "charliermarsh.ruff"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python"
+      }
+    }
+  }
+}

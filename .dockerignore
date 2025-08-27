@@ -1,0 +1,36 @@
+# Default `.dockerignore` file for ExoLife
+# Exclude files and directories that should not be sent to the Docker daemon
+
+# Python bytecode and cache directories
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+.env/
+.venv/
+
+# Node modules (not needed inside Python containers)
+node_modules/
+
+# Jupyter notebook checkpoints
+**/.ipynb_checkpoints
+
+# Pytest cache
+.pytest_cache/
+
+# Data and results (mounted as volumes instead)
+data/
+results/
+artifacts/
+
+# Logs
+*.log
+
+# Git metadata
+.git/

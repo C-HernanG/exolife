@@ -1,0 +1,51 @@
+# syntax=docker/dockerfile:1.7
+
+# Slim API image for ExoLife.  This image contains only the
+# dependencies required to serve the REST API (FastAPI + uvicorn) and
+# the ExoLife package itself.  It does not install development
+# tools or Jupyter.  Use this image to deploy the API for scoring
+# or inference.
+
+FROM python:3.11-slim AS api
+
+ENV PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+# Install basic tools and tini for proper signal handling
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    tini \
+    curl && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Install runtime dependencies from pyproject.toml.
+# FastAPI and uvicorn are needed for serving the API.
+COPY pyproject.toml ./pyproject.toml
+COPY package/ ./package/
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --upgrade pip && \
+    pip install -e . && \
+    pip install fastapi uvicorn[standard]
+
+# Copy additional configuration files
+COPY config/ ./config/
+
+# Copy the API server code.  The server is defined in
+# api/server.py outside of the package to avoid touching the core
+# ExoLife implementation.
+COPY api/ ./api/
+
+# Copy entrypoint script and make it executable
+COPY docker/entrypoints/entry.api.sh /usr/local/bin/entry.api.sh
+RUN chmod +x /usr/local/bin/entry.api.sh
+
+EXPOSE 8080
+
+# Use tini as the entrypoint.  The default command launches the
+# API server via entry.api.sh.
+ENTRYPOINT ["/usr/bin/tini", "-g", "--"]
+CMD ["entry.api.sh"]

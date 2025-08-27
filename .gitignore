@@ -97,6 +97,40 @@ Icon?
 *.md~
 LICENSE~
 
+# Docker-related files and directories
+.env
+.env.local
+.env.production
+.env.staging
+docker-compose.override.yml
+docker-compose.*.override.yml
+
+# Docker volumes and data
+docker-volumes/
+.docker/
+
+# Docker build cache and temporary files
+.docker-build/
+docker-build-context/
+
+# Container logs and outputs
+container-logs/
+docker-logs/
+
+# Local Docker development files
+docker-compose.local.yml
+docker-compose.debug.yml
+
+# Docker secrets and credentials
+docker-secrets/
+.docker-secrets
+docker.env
+
+# Kubernetes manifests with secrets
+k8s-secrets/
+*.secret.yaml
+*.secret.yml
+
 # Ignore all data but keep the folder (via .gitkeep)
 # Only root-level data folder
 /data/*

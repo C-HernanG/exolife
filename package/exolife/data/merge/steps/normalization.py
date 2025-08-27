@@ -28,6 +28,183 @@ from exolife.settings import Settings
 settings = Settings()
 
 
+def _get_units_for_measurement(col_name: str) -> str:
+    """Get canonical units for a measurement column."""
+    units_mapping = {
+        # Stellar parameters
+        "st_teff": "K",
+        "st_lum": "L_sun",
+        "st_mass": "M_sun",
+        "st_rad": "R_sun",
+        "st_logg": "log(cgs)",
+        "st_met": "dex",
+        "st_age": "Gyr",
+        "st_dens": "g/cm^3",
+        "sy_dist": "pc",
+        "sy_gmag": "mag",
+        "sy_kmag": "mag",
+        "sy_tmag": "mag",
+        # Planetary parameters
+        "pl_orbper": "days",
+        "pl_orbsmax": "AU",
+        "pl_orbeccen": "dimensionless",
+        "pl_orbincl": "deg",
+        "pl_rade": "R_earth",
+        "pl_radj": "R_jup",
+        "pl_masse": "M_earth",
+        "pl_massj": "M_jup",
+        "pl_dens": "g/cm^3",
+        "pl_eqt": "K",
+        "pl_insol": "S_earth",
+        # Derived features
+        "stellar_flux_s": "S_earth",
+        "equilibrium_temperature": "K",
+        "surface_gravity": "m/s^2",
+        "escape_velocity": "km/s",
+        "hz_position_conservative": "dimensionless",
+        "hz_position_optimistic": "dimensionless",
+        "distance_pc": "pc",
+    }
+
+    # Handle columns with suffixes like _mean, _std, etc.
+    base_col = col_name
+    for suffix in ["_mean", "_std", "_median", "_q16", "_q84", "err1", "err2"]:
+        if col_name.endswith(suffix):
+            base_col = col_name.replace(suffix, "")
+            break
+
+    return units_mapping.get(base_col, "")
+
+
+def _get_source_for_measurement(col_name: str, row: pd.Series) -> str:
+    """Get the source catalog for a measurement."""
+    # Check for explicit source columns first
+    source_col = f"{col_name}_source"
+    if source_col in row.index and pd.notna(row.get(source_col)):
+        return str(row.get(source_col))
+
+    # Determine source based on column prefix
+    if col_name.startswith("gaia_dr3_"):
+        return "GAIA_DR3"
+    elif col_name.startswith("sweet_cat_"):
+        return "SWEET_CAT"
+    elif col_name.startswith("phl_"):
+        return "PHL_EXOPLANET_CATALOG"
+    elif col_name.startswith("toi_"):
+        return "TOI_CANDIDATES"
+    elif col_name.startswith("koi_"):
+        return "KOI_CANDIDATES"
+    elif col_name.startswith(
+        (
+            "stellar_flux",
+            "equilibrium_temp",
+            "surface_gravity",
+            "escape_velocity",
+            "hz_position",
+        )
+    ):
+        return "EXOLIFE_DERIVED"
+    else:
+        return "NASA_EXOPLANET_ARCHIVE"
+
+
+def _get_method_for_measurement(col_name: str, row: pd.Series) -> str:
+    """Get the method used for a measurement."""
+    # Check for explicit method columns first
+    method_col = f"{col_name}_method"
+    if method_col in row.index and pd.notna(row.get(method_col)):
+        return str(row.get(method_col))
+
+    # Determine method based on column characteristics
+    if col_name.startswith(
+        (
+            "stellar_flux",
+            "equilibrium_temp",
+            "surface_gravity",
+            "escape_velocity",
+            "hz_position",
+        )
+    ):
+        return "monte_carlo_propagation"
+    elif "gaia" in col_name.lower():
+        return (
+            "astrometry"
+            if any(x in col_name for x in ["parallax", "pmra", "pmdec"])
+            else "photometry"
+        )
+    elif col_name.startswith("st_"):
+        return "spectroscopy"
+    elif col_name.startswith("pl_"):
+        return "transit" if row.get("tran_flag", 0) == 1 else "radial_velocity"
+    else:
+        return "unknown"
+
+
+def _get_feature_inputs(feature_name: str) -> str:
+    """Get the input fields used to derive a feature."""
+    input_mapping = {
+        "stellar_flux_s": "st_lum,pl_orbsmax",
+        "equilibrium_temperature": "st_teff,st_rad,pl_orbsmax,albedo,redistribution_factor",
+        "surface_gravity": "pl_masse,pl_rade",
+        "escape_velocity": "pl_masse,pl_rade",
+        "hz_position_conservative": "st_teff,st_lum,pl_orbsmax",
+        "hz_position_optimistic": "st_teff,st_lum,pl_orbsmax",
+    }
+    # Handle suffixed versions (_mean, _std, etc.)
+    (
+        feature_name.split("_")[0]
+        + "_"
+        + feature_name.split("_")[1]
+        + "_"
+        + feature_name.split("_")[2]
+        if len(feature_name.split("_")) > 2
+        else feature_name
+    )
+    for key in input_mapping:
+        if key in feature_name:
+            return input_mapping[key]
+    return ""
+
+
+def _canonicalize_alias_type(alias_type: str) -> str:
+    """Canonicalize alias type to standard enumeration."""
+    alias_type_lower = alias_type.lower().strip()
+
+    # Canonical mappings
+    canonical_types = {
+        "gaia_dr2_source_id": "GAIA_DR2",
+        "gaia_dr3_source_id": "GAIA_DR3",
+        "gaia_id": "GAIA_DR3",
+        "systemid": "HOSTNAME",
+        "system_id": "HOSTNAME",
+        "koi_candidates_kepid": "KOI",
+        "kepid": "KOI",
+        "koi": "KOI",
+        "toi_candidates_tid": "TOI",
+        "tid": "TOI",
+        "toi": "TOI",
+        "tic": "TIC",
+        "tic_id": "TIC",
+        "kic": "KIC",
+        "kic_id": "KIC",
+        "epic": "EPIC",
+        "epic_id": "EPIC",
+        "pl_name": "PLANET_NAME",
+        "planet_name": "PLANET_NAME",
+        "hostname": "HOST_STAR",
+        "host_name": "HOST_STAR",
+    }
+
+    return canonical_types.get(alias_type_lower, alias_type.upper())
+
+
+def _normalize_alias_value(alias_value: str) -> str:
+    """Normalize alias value by trimming and lowercasing."""
+    if pd.isna(alias_value):
+        return ""
+    return str(alias_value).strip().lower()
+
+
 def normalize_output_tables(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
     """Normalize the flat merged DataFrame into multiple entity tables.
 
@@ -97,8 +274,8 @@ def normalize_output_tables(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
             alias_records.append(
                 {
                     "exolife_star_id": star_id,
-                    "alias_type": "gaia_dr2_source_id",
-                    "alias_value": dr2_val,
+                    "alias_type": _canonicalize_alias_type("gaia_dr2_source_id"),
+                    "alias_value": _normalize_alias_value(str(dr2_val)),
                 }
             )
         dr3_val = None
@@ -110,8 +287,8 @@ def normalize_output_tables(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
             alias_records.append(
                 {
                     "exolife_star_id": star_id,
-                    "alias_type": "gaia_dr3_source_id",
-                    "alias_value": dr3_val,
+                    "alias_type": _canonicalize_alias_type("gaia_dr3_source_id"),
+                    "alias_value": _normalize_alias_value(str(dr3_val)),
                 }
             )
         # add more aliases if present (e.g., TIC, KIC), excluding internal and flag columns
@@ -130,8 +307,8 @@ def normalize_output_tables(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
                     alias_records.append(
                         {
                             "exolife_star_id": star_id,
-                            "alias_type": col,
-                            "alias_value": value,
+                            "alias_type": _canonicalize_alias_type(col),
+                            "alias_value": _normalize_alias_value(str(value)),
                         }
                     )
     star_aliases_df = (
@@ -142,8 +319,10 @@ def normalize_output_tables(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
         star_aliases_df["alias_value"] = star_aliases_df["alias_value"].astype(str)
     tables["star_aliases"] = star_aliases_df
 
-    # 3. Planets table: one row per planet
+    # 3. Planets table: one row per planet (exclude candidate-specific columns)
     planet_cols: List[str] = []
+    candidate_cols: List[str] = []
+
     for col in df.columns:
         if col.startswith("pl_") or col in [
             "exolife_planet_id",
@@ -151,6 +330,9 @@ def normalize_output_tables(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
             "crossmatch_quality",
         ]:
             planet_cols.append(col)
+        elif col.startswith(("toi_candidates_", "koi_candidates_")):
+            candidate_cols.append(col)
+
     # remove duplicates while preserving order
     unique_planet_cols = list(dict.fromkeys(planet_cols))
     planets_df = (
@@ -159,6 +341,31 @@ def normalize_output_tables(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
         .reset_index(drop=True)
     )
     tables["planets"] = planets_df
+
+    # 3b. Candidate metadata tables
+    # TOI candidates table
+    toi_cols = ["exolife_planet_id"] + [
+        col for col in candidate_cols if col.startswith("toi_")
+    ]
+    if toi_cols and len(toi_cols) > 1:  # more than just the ID column
+        toi_df = df[toi_cols].dropna(
+            subset=[col for col in toi_cols[1:3] if col in df.columns], how="all"
+        )
+        if not toi_df.empty:
+            toi_df = toi_df.drop_duplicates("exolife_planet_id").reset_index(drop=True)
+            tables["toi_candidates"] = toi_df
+
+    # KOI candidates table
+    koi_cols = ["exolife_planet_id"] + [
+        col for col in candidate_cols if col.startswith("koi_")
+    ]
+    if koi_cols and len(koi_cols) > 1:  # more than just the ID column
+        koi_df = df[koi_cols].dropna(
+            subset=[col for col in koi_cols[1:3] if col in df.columns], how="all"
+        )
+        if not koi_df.empty:
+            koi_df = koi_df.drop_duplicates("exolife_planet_id").reset_index(drop=True)
+            tables["koi_candidates"] = koi_df
 
     # 4. Planet aliases table
     palias_records: List[Dict[str, Any]] = []
@@ -169,8 +376,8 @@ def normalize_output_tables(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
             palias_records.append(
                 {
                     "exolife_planet_id": pid,
-                    "alias_type": "pl_name",
-                    "alias_value": row.get("pl_name"),
+                    "alias_type": _canonicalize_alias_type("pl_name"),
+                    "alias_value": _normalize_alias_value(str(row.get("pl_name"))),
                 }
             )
         # additional alias fields (KOI, TOI, TIC, KIC, EPIC, etc.)
@@ -188,16 +395,16 @@ def normalize_output_tables(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
                     palias_records.append(
                         {
                             "exolife_planet_id": pid,
-                            "alias_type": col,
-                            "alias_value": value,
+                            "alias_type": _canonicalize_alias_type(col),
+                            "alias_value": _normalize_alias_value(str(value)),
                         }
                     )
-    planet_aliases_df = (
-        pd.DataFrame(palias_records).drop_duplicates().reset_index(drop=True)
-    )
-    # Ensure alias_value is string for Parquet compatibility
-    if not planet_aliases_df.empty and "alias_value" in planet_aliases_df.columns:
-        planet_aliases_df["alias_value"] = planet_aliases_df["alias_value"].astype(str)
+    # Remove duplicates based on all three keys
+    planet_aliases_df = pd.DataFrame(palias_records)
+    if not planet_aliases_df.empty:
+        planet_aliases_df = planet_aliases_df.drop_duplicates(
+            subset=["exolife_planet_id", "alias_type", "alias_value"]
+        ).reset_index(drop=True)
     tables["planet_aliases"] = planet_aliases_df
 
     # 5. Measurements table
@@ -236,16 +443,27 @@ def normalize_output_tables(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
             if err2_col in df.columns and pd.notna(row.get(err2_col)):
                 err = err if err is not None else 0.0
                 err = (err + abs(row.get(err2_col))) / 2.0
-            # Units
-            units = None
+            # Units - use mapping first, then explicit column
+            units = _get_units_for_measurement(col)
             unit_col = f"{col}_units"
-            if unit_col in df.columns:
+            if unit_col in df.columns and pd.notna(row.get(unit_col)):
                 units = row.get(unit_col)
+
             # Source
-            source = None
-            source_col = f"{col}_source"
-            if source_col in df.columns:
-                source = row.get(source_col)
+            source = _get_source_for_measurement(col, row)
+
+            # Method
+            method = _get_method_for_measurement(col, row)
+
+            # Epoch - derive from context or leave None
+            epoch = None
+            epoch_col = f"{col}_epoch"
+            if epoch_col in df.columns and pd.notna(row.get(epoch_col)):
+                epoch = str(row.get(epoch_col))
+
+            # Provenance
+            provenance = f"{source}:{method}"
+
             measurement_records.append(
                 {
                     "object_id": object_id,
@@ -255,9 +473,9 @@ def normalize_output_tables(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
                     "err": err,
                     "units": units,
                     "source": source,
-                    "method": None,
-                    "epoch": None,
-                    "provenance": None,
+                    "method": method,
+                    "epoch": epoch,
+                    "provenance": provenance,
                 }
             )
     measurements_df = pd.DataFrame(measurement_records)
@@ -316,6 +534,10 @@ def normalize_output_tables(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
                 units = "km/s"
             elif "hz_position" in col:
                 units = "dimensionless"
+            # Flatten assumptions dict to separate columns for Parquet compatibility
+            albedo_val = row.get("albedo", 0.3)
+            redistribution_val = row.get("redistribution_factor", 1.0)
+
             derived_records.append(
                 {
                     "object_id": pid,
@@ -323,11 +545,11 @@ def normalize_output_tables(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
                     "value": val,
                     "units": units,
                     "err": None,
-                    "assumptions": {
-                        "albedo": row.get("albedo", 0.3),
-                        "redistribution_factor": row.get("redistribution_factor", 1.0),
-                    },
+                    "albedo_assumption": float(albedo_val),
+                    "redistribution_factor_assumption": float(redistribution_val),
                     "method": "monte_carlo",
+                    "provenance": "monte_carlo_propagation@v1.0",
+                    "inputs": _get_feature_inputs(col),
                 }
             )
     derived_df = pd.DataFrame(derived_records)
@@ -336,26 +558,9 @@ def normalize_output_tables(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
         derived_df["object_id"] = derived_df["object_id"].astype(str)
     tables["derived_features"] = derived_df
 
-    # 7. xmatch edges table
+    # 7. xmatch edges table - slim version with only essential columns
     edge_records: List[Dict[str, Any]] = []
-    # (a) GAIA DR2/DR3 direct crossmatch edges
-    for _, row in df.iterrows():
-        dr2 = row.get("gaia_dr2_source_id")
-        dr3 = row.get("gaia_dr3_source_id")
-        if pd.notna(dr2) and pd.notna(dr3):
-            edge_records.append(
-                {
-                    "src_catalog": "GAIA_DR2",
-                    "src_id": str(dr2),
-                    "dst_catalog": "GAIA_DR3",
-                    "dst_id": str(dr3),
-                    "method": row.get("crossmatch_quality"),
-                    "score": row.get("crossmatch_score"),
-                    "sep": row.get("angular_separation"),
-                    "epoch": None,
-                    "notes": None,
-                }
-            )
+    # Only include alias-based edges since geometric xmatch data is not populated
     # (b) Alias-based crossmatch edges for stars
     star_aliases = tables.get("star_aliases")
     if star_aliases is not None:
@@ -367,32 +572,13 @@ def normalize_output_tables(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
                 for j in range(i + 1, n):
                     a = alias_list[i]
                     b = alias_list[j]
-                    # forward edge
+                    # Only forward edge to reduce redundancy
                     edge_records.append(
                         {
                             "src_catalog": str(a["alias_type"]),
                             "src_id": str(a["alias_value"]),
                             "dst_catalog": str(b["alias_type"]),
                             "dst_id": str(b["alias_value"]),
-                            "method": "alias",
-                            "score": None,
-                            "sep": None,
-                            "epoch": None,
-                            "notes": None,
-                        }
-                    )
-                    # reverse edge
-                    edge_records.append(
-                        {
-                            "src_catalog": str(b["alias_type"]),
-                            "src_id": str(b["alias_value"]),
-                            "dst_catalog": str(a["alias_type"]),
-                            "dst_id": str(a["alias_value"]),
-                            "method": "alias",
-                            "score": None,
-                            "sep": None,
-                            "epoch": None,
-                            "notes": None,
                         }
                     )
     # (c) Alias-based crossmatch edges for planets
@@ -406,30 +592,13 @@ def normalize_output_tables(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
                 for j in range(i + 1, n):
                     a = alias_list[i]
                     b = alias_list[j]
+                    # Only forward edge to reduce redundancy
                     edge_records.append(
                         {
                             "src_catalog": str(a["alias_type"]),
                             "src_id": str(a["alias_value"]),
                             "dst_catalog": str(b["alias_type"]),
                             "dst_id": str(b["alias_value"]),
-                            "method": "alias",
-                            "score": None,
-                            "sep": None,
-                            "epoch": None,
-                            "notes": None,
-                        }
-                    )
-                    edge_records.append(
-                        {
-                            "src_catalog": str(b["alias_type"]),
-                            "src_id": str(b["alias_value"]),
-                            "dst_catalog": str(a["alias_type"]),
-                            "dst_id": str(a["alias_value"]),
-                            "method": "alias",
-                            "score": None,
-                            "sep": None,
-                            "epoch": None,
-                            "notes": None,
                         }
                     )
     # Build DataFrame for xmatch edges; drop duplicates
@@ -486,7 +655,27 @@ def save_normalized_results(
     for name, table in tables.items():
         parquet_path = base_dir / f"{output_name}_{name}.parquet"
         output_path: Path = parquet_path
-        table.to_parquet(parquet_path, index=False)
+
+        # Optimize storage based on table type
+        compression = "zstd"
+        row_group_size = 200000
+
+        if name == "xmatch_edges":
+            # Optimize for largest table - use dictionary encoding for strings
+            compression = "zstd"
+            row_group_size = 128000
+
+        elif name in ["planet_aliases", "star_aliases"]:
+            # Medium tables - use higher compression
+            compression = "zstd"
+            row_group_size = 150000
+
+        table.to_parquet(
+            parquet_path,
+            index=False,
+            compression=compression,
+            row_group_size=row_group_size,
+        )
         output_paths[name] = output_path
     return output_paths
 
@@ -521,7 +710,9 @@ def save_results(
     filename_base = output_config.get("filename", output_name)
     parquet_path = output_dir / f"{filename_base}.parquet"
     output_path: Path = parquet_path
-    df.to_parquet(parquet_path, index=False)
+
+    # Use optimized storage settings
+    df.to_parquet(parquet_path, index=False, compression="zstd", row_group_size=200000)
     return output_path
 
 

@@ -1,0 +1,139 @@
+# Docker Compose configuration for the ExoLife project.  This file
+# defines isolated development, training and API services using the
+# container images built from the Dockerfiles in the `docker/`
+# directory.  Each service mounts the project code and shared
+# volumes so that results persist across container restarts.
+
+x-common-env: &common_env
+  # Environment variables shared by all services
+  EXOLIFE_DATA_DIR: /data
+  EXOLIFE_LOG_LEVEL: ${EXOLIFE_LOG_LEVEL:-INFO}
+  MPLBACKEND: Agg
+  PYTHONUNBUFFERED: "1"
+  HF_HOME: /hf-cache
+
+services:
+  # Development service with JupyterLab.  Mounts the source code and
+  # configuration, and exposes the notebook server on port 8888.  Use
+  # this when exploring notebooks or running ad‑hoc analysis.
+  exolife-dev:
+    profiles: ["dev"]
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.base
+    image: exolife/base:latest
+    command: ["entry.dev.sh"]
+    env_file:
+      - .env
+    environment:
+      <<: *common_env
+    ports:
+      - "8888:8888"
+    volumes:
+      # Mount the entire project so changes are reflected immediately
+      - .:/workspace:cached
+      # Mount the notebooks directory inside the workspace for convenience
+      - ./notebooks:/workspace/notebooks:cached
+      # Shared persistent volumes
+      - exolife_data:/data
+      - exolife_artifacts:/artifacts
+      - hf_cache:/hf-cache
+    tty: true
+
+  # Training service for running pipelines or experiments.  This
+  # service uses the GPU image when GPUs are available.  It executes
+  # a DAG via the CLI by default.  To customise the DAG file or
+  # execution mode, override the `command` in docker-compose or
+  # execute the container manually.
+  exolife-train:
+    profiles: ["train"]
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.gpu
+    image: exolife/gpu:latest
+    command: ["entry.pipeline.sh", "config/dags/exolife_dag_v1.yaml", "parallel"]
+    env_file:
+      - .env
+    environment:
+      <<: *common_env
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: ["gpu"]
+    volumes:
+      - .:/workspace:cached
+      - exolife_data:/data
+      - exolife_artifacts:/artifacts
+      - hf_cache:/hf-cache
+
+  # HTTP API service exposing a REST interface for model scoring or
+  # inference.  This uses the slim API runtime image.  An example
+  # FastAPI server is included in `api/server.py`.  Update the
+  # `command` or image if you provide a different API implementation.
+  exolife-api:
+    profiles: ["api"]
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    image: exolife/api:latest
+    command: ["entry.api.sh"]
+    env_file:
+      - .env
+    environment:
+      <<: *common_env
+      EXOLIFE_MODEL_PATH: /artifacts/models/latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app:cached
+      - exolife_data:/data
+      - exolife_artifacts:/artifacts
+      - hf_cache:/hf-cache
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 3s
+      retries: 5
+
+  # Optional MLflow tracking server used during training.  Only
+  # activated when the "train" profile is selected.  Stores its
+  # database and artifacts on the `mlflow` volume.
+  mlflow:
+    profiles: ["train"]
+    image: ghcr.io/mlflow/mlflow:v2.16.0
+    environment:
+      MLFLOW_BACKEND_STORE_URI: sqlite:////mlflow/mlflow.db
+      MLFLOW_ARTIFACT_ROOT: /mlflow/artifacts
+    volumes:
+      - mlflow:/mlflow
+    ports:
+      - "5000:5000"
+    command:
+      - mlflow
+      - server
+      - --host
+      - 0.0.0.0
+      - --port
+      - "5000"
+      - --backend-store-uri
+      - sqlite:////mlflow/mlflow.db
+      - --default-artifact-root
+      - /mlflow/artifacts
+
+volumes:
+  # Persistent volume for data sets.  Mounted at /data in the
+  # containers and can be backed up or inspected on the host via
+  # `docker volume inspect exolife_data`.
+  exolife_data:
+  # Persistent volume for model artifacts and outputs.  Mounted at
+  # /artifacts in the containers.  Use this to store trained
+  # models, reports and other generated files.
+  exolife_artifacts:
+  # Cache for Hugging Face models or other downloads.  Prevents
+  # redownloading large files on subsequent runs.
+  hf_cache:
+  # Volume for MLflow tracking server.  Only used when the train
+  # profile is active.
+  mlflow:

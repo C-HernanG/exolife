@@ -1,0 +1,65 @@
+# syntax=docker/dockerfile:1.7
+
+# GPU runtime image for ExoLife.  This image is based on the
+# official NVIDIA CUDA runtime and includes only the core runtime
+# dependencies.  It is intended for running training workloads
+# and pipelines that benefit from GPU acceleration.  The Python
+# environment is kept consistent with the base image to avoid
+# version mismatches between CPU and GPU installations.
+
+ARG CUDA_VERSION=12.4.1
+FROM nvidia/cuda:${CUDA_VERSION}-runtime-ubuntu22.04 AS gpu
+
+ENV PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    MPLBACKEND=Agg
+
+# Install Python 3.11 and basic build tools.  Tini is included for
+# signal handling.  OpenBLAS and SSL libraries are required for
+# numerical and network packages.
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    software-properties-common && \
+    add-apt-repository ppa:deadsnakes/ppa && \
+    apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    python3.11 \
+    python3.11-venv \
+    python3.11-dev \
+    tini \
+    libopenblas-dev \
+    libffi-dev \
+    libssl-dev && \
+    update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1 && \
+    python3.11 -m ensurepip --upgrade && \
+    update-alternatives --install /usr/bin/pip3 pip3 /usr/local/bin/pip3.11 1 && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set up a working directory
+WORKDIR /workspace
+
+# Copy the project configuration and install dependencies.
+# All dependencies are now managed in pyproject.toml.
+COPY pyproject.toml ./pyproject.toml
+COPY package/ ./package/
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip3 install --upgrade pip && \
+    pip3 install -e .
+
+# Copy additional configuration files
+COPY config/ ./config/
+
+# Copy entrypoint scripts and make them executable.
+COPY docker/entrypoints/ /usr/local/bin/
+RUN chmod +x /usr/local/bin/*.sh
+
+# Expose all available GPUs to the container.  These environment
+# variables are recognised by the NVIDIA Container Toolkit.
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
+
+# Use tini as the entrypoint.  Default command just starts a shell.
+ENTRYPOINT ["/usr/bin/tini", "-g", "--"]
+CMD ["bash"]

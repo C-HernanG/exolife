@@ -163,24 +163,42 @@ def apply_physical_range_checks(df: pd.DataFrame) -> pd.DataFrame:
             result.loc[~mask, col] = np.nan
 
     # Correct unrealistically long orbital periods using Kepler's law.
-    # If pl_orbper is extremely large (e.g., >1e5 days), recompute
-    # period from semi-major axis and stellar mass when available:
-    # P (days) = sqrt(a^3 / M_star) * 365.25, where a (AU) and
-    # M_star (M_sun).
+    # Initialize the correction flag column
+    if "pl_orbper_corrected" not in result.columns:
+        result["pl_orbper_corrected"] = ""
+
     if all(c in result.columns for c in ["pl_orbper", "pl_orbsmax", "st_mass"]):
-        mask_fix = (
+        # Enhanced period correction logic
+        mask_extreme = (
+            # More than 100,000 days (~273 years)
             (result["pl_orbper"] > 1.0e5)
             & result["pl_orbsmax"].notna()
             & result["st_mass"].notna()
+            & (result["pl_orbsmax"] > 0)
+            & (result["st_mass"] > 0)
         )
-        if mask_fix.any():
-            a_vals = result.loc[mask_fix, "pl_orbsmax"].astype(float)
-            mstar_vals = result.loc[mask_fix, "st_mass"].astype(float)
+
+        if mask_extreme.any():
+            a_vals = result.loc[mask_extreme, "pl_orbsmax"].astype(float)
+            mstar_vals = result.loc[mask_extreme, "st_mass"].astype(float)
             # Kepler's third law: P(years) = sqrt(a^3 / M_star)
             # Convert to days
             period_days = np.sqrt(a_vals**3 / mstar_vals) * 365.25
-            result.loc[mask_fix, "pl_orbper"] = period_days
+            result.loc[mask_extreme, "pl_orbper"] = period_days
             # Flag corrected records for provenance
-            result.loc[mask_fix, "pl_orbper_corrected"] = True
+            result.loc[mask_extreme, "pl_orbper_corrected"] = "kepler_third_law"
+
+    # Cap extremely unrealistic periods and flag them
+    if "pl_orbper" in result.columns:
+        # Cap periods beyond physical plausibility (> 1 million years)
+        mask_cap = result["pl_orbper"] > 365.25 * 1e6
+        if mask_cap.any():
+            result.loc[mask_cap, "pl_orbper"] = np.nan
+            result.loc[mask_cap, "pl_orbper_flag_invalid"] = True
+            result.loc[mask_cap, "pl_orbper_corrected"] = "capped_unphysical"
+
+    # Remove pl_pubdate if it's 100% null (as noted in the report)
+    if "pl_pubdate" in result.columns and result["pl_pubdate"].isna().all():
+        result = result.drop(columns=["pl_pubdate"])
 
     return result

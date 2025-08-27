@@ -67,8 +67,10 @@ def generate_report():
 
     print("Starting ExoLife Processed Data Analysis...")
 
-    # Define paths
-    base_path = Path("/Users/chernang/Dev/exolife/data/processed")
+    # Define paths relative to project root
+    script_dir = Path(__file__).parent
+    project_root = script_dir.parent
+    base_path = project_root / "data" / "processed"
     catalog_path = base_path / "exolife_catalog"
     normalized_path = base_path / "normalized_tables"
 
@@ -311,8 +313,19 @@ if __name__ == "__main__":
     try:
         report = generate_report()
 
-        # Save report to file
-        output_file = "/Users/chernang/Dev/exolife/docs/reports/exolife_processed_data_analysis_report.txt"
+        # Save report to file using relative path
+        script_dir = Path(__file__).parent
+        project_root = script_dir.parent
+        output_file = (
+            project_root
+            / "results"
+            / "data_reports"
+            / "exolife_processed_data_analysis_report.txt"
+        )
+
+        # Create directory if it doesn't exist
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+
         with open(output_file, "w", encoding="utf-8") as f:
             f.write(report)
 
