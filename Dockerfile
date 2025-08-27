@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy project files
-COPY pyproject.toml ./
+COPY pyproject.toml README.md ./
 COPY package/ ./package/
 
 # Install Python dependencies from pyproject.toml
@@ -61,7 +61,7 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 COPY --chown=exolife:exolife package/ ./package/
 COPY --chown=exolife:exolife config/ ./config/
 COPY --chown=exolife:exolife scripts/ ./scripts/
-COPY --chown=exolife:exolife pyproject.toml ./
+COPY --chown=exolife:exolife pyproject.toml README.md ./
 
 # Install the package in the final image
 RUN pip install --no-cache-dir -e .

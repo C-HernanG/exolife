@@ -39,8 +39,9 @@ jobs:
       - name: Run linting in container
         run: |
           docker run --rm \
-            -v ${{ github.workspace }}/package:/app/package \
-            -v ${{ github.workspace }}/pyproject.toml:/app/pyproject.toml \
+            -v ${{ github.workspace }}:/workspace \
+            -w /workspace \
+            --user root \
             exolife:test \
             bash -c "
               pip install -e .[dev] &&
